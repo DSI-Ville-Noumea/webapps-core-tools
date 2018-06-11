@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>nc.noumea.mairie</groupId>
+    <artifactId>webapps-core-tools</artifactId>
+    <version>1.00.00</version>
+
+    <name>WebApps Core Tools</name>
+    <description>Ensemble de classes et patterns utilitaires</description>
+    <url>http://maven.apache.org</url>
+    <inceptionYear>2018</inceptionYear>
+    <organization>
+        <name>Mairie de Nouméa, Nouvelle-Calédonie</name>
+        <url>http://www.noumea.nc/</url>
+    </organization>
+
+    <properties>
+        <java.version>1.8</java.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--dependencies versions-->
+        <spring.security.version>4.2.3.RELEASE</spring.security.version>
+        <spring.ldap.version>2.3.1.RELEASE</spring.ldap.version>
+        <spring.data.jpa.version>1.11.7.RELEASE</spring.data.jpa.version>
+        <joda-time.version>2.10</joda-time.version>
+        <hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
+        <javax.mail.version>1.6.1</javax.mail.version>
+        <commons.collections.version>4.1</commons.collections.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <commons.codec.version>1.10</commons.codec.version>
+        <org.docx4j.version>3.3.7</org.docx4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <lombok.version>1.18.0</lombok.version>
+        <docx4j-export-fo.version>3.3.6</docx4j-export-fo.version>
+        <javax.persistence-api.version>2.2</javax.persistence-api.version>
+        <jmimemagic.version>0.1.2</jmimemagic.version>
+        <imgscalr.lib.version>4.2</imgscalr.lib.version>
+        <com.ibm.icu.icu4j.version>61.1</com.ibm.icu.icu4j.version>
+        <org.apache.velocity.version>1.7</org.apache.velocity.version>
+        <zk.version>8.5.0</zk.version>
+        <com.googlecode.libphonenumber.version>8.9.7</com.googlecode.libphonenumber.version>
+
+        <!--plugins versions-->
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <license-maven-plugin.version>1.14</license-maven-plugin.version>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/DSI-Ville-Noumea/webapps-core-tools.git</connection>
+        <developerConnection>scm:git:git://github.com/DSI-Ville-Noumea/webapps-core-tools.git</developerConnection>
+        <url>https://github.com/DSI-Ville-Noumea/webapps-core-tools.git</url>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>ZK CE</id>
+            <name>ZK CE Repository</name>
+            <url>http://mavensync.zkoss.org/maven2</url>
+        </repository>
+        <repository>
+            <id>ZK EE</id>
+            <url>https://maven.zkoss.org/repo/zk/ee</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>${javax.persistence-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring.data.jpa.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>${org.apache.velocity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons.collections.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons.codec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>${javax.mail.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j</artifactId>
+            <version>${org.docx4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j-export-fo</artifactId>
+            <version>${docx4j-export-fo.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jmimemagic</groupId>
+            <artifactId>jmimemagic</artifactId>
+            <version>${jmimemagic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>${imgscalr.lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>${com.ibm.icu.icu4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zkoss.zk</groupId>
+            <artifactId>zkex</artifactId>
+            <version>${zk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>${com.googlecode.libphonenumber.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <configuration>
+                    <verbose>false</verbose>
+                    <licenseName>gpl_v3</licenseName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>first</id>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <licenseName>gpl_v3</licenseName>
+                            <roots>
+                                <root>src/main/java</root>
+                                <root>src/test</root>
+                                <root>src/main/webapp</root>
+                            </roots>
+                            <excludes>
+                                <exclude>*.png</exclude>
+                                <exclude>*.doc</exclude>
+                                <exclude>*.docx</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

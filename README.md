@@ -1,1 +1,26 @@
 # webapps-core-tools
+
+Ensemble de classes et patterns utilitaires. 
+
+## Installation
+Pour un projet génénré à partir du ***zkboot-project-archetype*** :  
+* Ajouter la dépendance MAVEN
+````
+ <dependency>
+    <groupId>nc.noumea.mairie</groupId>
+    <artifactId>webapps-core-tools</artifactId>
+    <version>1.00.00</version>
+</dependency>
+````
+* Faire hériter Utilisateur des classes *IUtilisateur* et *AbstractEntity*
+````
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.IUtilisateur;
+...
+
+@Entity
+@Table(name = "UTILISATEUR")
+public class Utilisateur extends AbstractEntity implements IUtilisateur {
+    ...
+}
+````
