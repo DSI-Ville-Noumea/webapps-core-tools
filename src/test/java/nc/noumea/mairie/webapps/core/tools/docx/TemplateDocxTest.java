@@ -7,6 +7,7 @@ package nc.noumea.mairie.webapps.core.tools.docx;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
+
 public class TemplateDocxTest {
 
 	private static Logger log = LoggerFactory.getLogger(TemplateDocxTest.class);
 
-	public static final String DOCX_BASE_DIR = "./src/test/java/nc.noumea.mairie.webapps.core.tools.docx/";
+	public static final String DOCX_BASE_DIR = "./src/test/java/nc/noumea/mairie/webapps/core/tools/docx/";
 
 	@Test
 	public void testCreateDocx() throws IOException, Docx4JException, JAXBException {
@@ -65,5 +68,17 @@ public class TemplateDocxTest {
 		File fichierResultat = File.createTempFile("demo-resultat", ".docx");
 		log.info("fichier généré = " + fichierResultat.getAbsolutePath());
 		templateDocx.createDocx(fichierResultat);
+		assertTrue(fichierResultat.exists());
+		assertTrue(fichierResultat.length() > 30000d);
+	}
+
+	@Test
+	public void testAddParagraphOfTextNotUsingTemplateDocxWrapper() throws Docx4JException, IOException {
+		WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.createPackage();
+		wordMLPackage.getMainDocumentPart().addParagraphOfText("Ouh yeah!");
+		File fichierResultat = File.createTempFile("demo-resultat2", ".docx");
+		wordMLPackage.save(fichierResultat);
+		assertTrue(fichierResultat.exists());
+		assertTrue(fichierResultat.length() > 5000d);
 	}
 }

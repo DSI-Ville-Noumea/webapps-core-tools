@@ -32,7 +32,7 @@ class BusinessExceptionTest {
         val message = "ouh yeah"
         try {
             throw BusinessException(message)
-            fail(String.format("Expected a BusinessException '%s'", message))
+            fail("Expected a BusinessException $message")
         } catch (e: BusinessException) {
             assertThat(e.message).isEqualTo(message)
         }

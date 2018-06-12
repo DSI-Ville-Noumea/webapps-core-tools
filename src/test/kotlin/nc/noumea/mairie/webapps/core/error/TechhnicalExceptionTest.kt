@@ -34,7 +34,7 @@ class TechhnicalExceptionTest {
         val message = "ouh yeah"
         try {
             throw TechnicalException(message)
-            fail(String.format("Expected a TechnicalException '%s'", message))
+            fail("Expected a BusinessException $message")
         } catch (e: TechnicalException) {
             assertThat(e.message).isEqualTo(message)
         }
