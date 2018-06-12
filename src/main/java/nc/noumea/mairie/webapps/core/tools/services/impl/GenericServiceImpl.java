@@ -23,6 +23,8 @@ package nc.noumea.mairie.webapps.core.tools.services.impl;
  */
 
 
+import nc.noumea.mairie.webapps.core.error.BusinessException;
+import nc.noumea.mairie.webapps.core.error.TechnicalException;
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.services.GenericService;
 import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
@@ -41,15 +43,16 @@ import java.util.Optional;
 public abstract class GenericServiceImpl<T extends AbstractEntity> implements GenericService<T> {
 
 	@Autowired
-	ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 
-	PagingAndSortingRepository repository;
+	private PagingAndSortingRepository repository;
 
 	protected PagingAndSortingRepository getRepository() {
 		if (this.repository == null){
 			this.repository = (PagingAndSortingRepository)applicationContext.getBean(getRepositoryBeanName());
-			if (this.repository == null)
-				throw new RuntimeException("Impossible de trouver le bean " + getRepositoryBeanName());
+			if (this.repository == null){
+				throw new TechnicalException("Impossible de trouver le bean " + getRepositoryBeanName());
+			}
 		}
 		return repository;
 	}
