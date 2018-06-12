@@ -1,4 +1,5 @@
 package nc.noumea.mairie.webapps.core.error
 
-class BusinessException(s: String) : RuntimeException() {
+class BusinessException(message: String) : RuntimeException(message) {
+
 }

@@ -1,4 +1,4 @@
 package nc.noumea.mairie.webapps.core.error
 
-class TechnicalException(s: String) : RuntimeException() {
+class TechnicalException(message: String) : RuntimeException(message) {
 }
