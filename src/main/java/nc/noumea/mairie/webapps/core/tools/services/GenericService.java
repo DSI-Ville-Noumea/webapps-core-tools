@@ -25,6 +25,9 @@ package nc.noumea.mairie.webapps.core.tools.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 public interface GenericService<T> {
@@ -37,11 +40,13 @@ public interface GenericService<T> {
 
 	T findOne(Long var1);
 
+	T findOneOrNull(Long var1);
+
 	boolean exists(Long var1);
 
 	Iterable<T> findAll();
 
-	Iterable<T> findAll(Iterable<Long> var1);
+	Page<T> findAll(Pageable pageable);
 
 	long count();
 

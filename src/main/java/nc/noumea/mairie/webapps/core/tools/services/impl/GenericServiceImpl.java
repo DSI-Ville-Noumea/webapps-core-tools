@@ -25,16 +25,21 @@ package nc.noumea.mairie.webapps.core.tools.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 import nc.noumea.mairie.webapps.core.tools.services.GenericService;
 import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 public abstract class GenericServiceImpl<T> implements GenericService<T> {
 
 	@Override
-	public abstract CrudRepository getRepository();
+	public abstract PagingAndSortingRepository getRepository();
 
 	@Override
 	public <S extends T> S save(S var1) {
@@ -43,17 +48,26 @@ public abstract class GenericServiceImpl<T> implements GenericService<T> {
 
 	@Override
 	public <S extends T> Iterable<S> save(Iterable<S> var1) {
-		return getRepository().save(var1);
+		return getRepository().saveAll(var1);
 	}
 
 	@Override
-	public T findOne(Long var1) {
-		return (T) getRepository().findOne(var1);
+	public T findOneOrNull(Long id) {
+		Optional<T> optionalT = getRepository().findById(id);
+		if (optionalT.isPresent())
+			return optionalT.get();
+		return null;
 	}
 
 	@Override
-	public boolean exists(Long var1) {
-		return getRepository().exists(var1);
+	public T findOne(Long id) {
+		Optional<T> optionalT = getRepository().findById(id);
+		return optionalT.get();
+	}
+
+	@Override
+	public boolean exists(Long id) {
+		return getRepository().existsById(id);
 	}
 
 	@Override
@@ -62,8 +76,8 @@ public abstract class GenericServiceImpl<T> implements GenericService<T> {
 	}
 
 	@Override
-	public Iterable<T> findAll(Iterable<Long> var1) {
-		return getRepository().findAll(var1);
+	public Page<T> findAll(Pageable pageable) {
+		return getRepository().findAll(pageable);
 	}
 
 	@Override
