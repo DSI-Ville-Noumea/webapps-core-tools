@@ -32,7 +32,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface GenericService<T> {
 
-	CrudRepository getRepository();
+	Class<? extends T> getClasseReferente();
 
 	<S extends T> S save(S var1);
 

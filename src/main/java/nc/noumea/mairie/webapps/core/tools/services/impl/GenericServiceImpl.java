@@ -23,23 +23,45 @@ package nc.noumea.mairie.webapps.core.tools.services.impl;
  */
 
 
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.services.GenericService;
+import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.CrudRepository;
+public abstract class GenericServiceImpl<T extends AbstractEntity> implements GenericService<T> {
 
-import nc.noumea.mairie.webapps.core.tools.services.GenericService;
-import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
-import org.springframework.data.repository.PagingAndSortingRepository;
+	@Autowired
+	ApplicationContext applicationContext;
 
-public abstract class GenericServiceImpl<T> implements GenericService<T> {
+	PagingAndSortingRepository repository;
+
+	protected PagingAndSortingRepository getRepository() {
+		if (this.repository == null){
+			this.repository = (PagingAndSortingRepository)applicationContext.getBean(getRepositoryBeanName());
+			if (this.repository == null)
+				throw new RuntimeException("Impossible de trouver le bean " + getRepositoryBeanName());
+		}
+		return repository;
+	}
+
+	private String getRepositoryBeanName(){
+		return StringUtils.uncapitalize(getClasseReferente().getSimpleName()) + "Repository";
+	}
 
 	@Override
-	public abstract PagingAndSortingRepository getRepository();
+	public Class<? extends T> getClasseReferente() {
+		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+	}
 
 	@Override
 	public <S extends T> S save(S var1) {
