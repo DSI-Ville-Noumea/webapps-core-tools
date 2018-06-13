@@ -23,17 +23,21 @@ package nc.noumea.mairie.webapps.core.tools.util;
  */
 
 
+import nc.noumea.mairie.webapps.core.error.TechnicalException;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /**
  * Classe utilitaire pour gérer l'application-context spring
  */
 public class ApplicationContextUtil implements ApplicationContextAware {
 
-	private static ApplicationContext ctx;
+	private static ApplicationContext applicationContext;
 
+	@Override
 	public void setApplicationContext(ApplicationContext appContext) throws BeansException {
 		ApplicationContextUtil.setApplicationContextStatic(appContext);
 	}
@@ -41,11 +45,13 @@ public class ApplicationContextUtil implements ApplicationContextAware {
 	/**
 	 * passage par une méthode statique pour éviter anomalie dans les rapports findbug/pmd
 	 */
-	private static void setApplicationContextStatic(ApplicationContext appContext) {
-		ctx = appContext;
+	public static void setApplicationContextStatic(ApplicationContext appContext) {
+		if (applicationContext != null)
+			throw new TechnicalException("ApplicationContext déjà injecté !");
+		applicationContext = appContext;
 	}
 
 	public static ApplicationContext getApplicationContext() {
-		return ctx;
+		return applicationContext;
 	}
 }
