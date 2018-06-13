@@ -27,7 +27,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Assert
 import org.junit.Test
 
-class TechhnicalExceptionTest {
+class TechnicalExceptionTest {
 
     @Test
     fun testTechnicalException(){
