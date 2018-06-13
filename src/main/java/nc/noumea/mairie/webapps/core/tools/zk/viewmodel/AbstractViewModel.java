@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,6 @@ import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.services.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
@@ -129,12 +129,12 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	 */
 	@Command
 	public void ouvreOnglet(@BindingParam("entity") AbstractEntity abstractEntity, String editViewURI, Integer selectedTabIndex) {
-		defaultPublishOnShinigamiQueue().publish(new OuvreOngletAbstractEntityEvent(abstractEntity, editViewURI, selectedTabIndex));
+		defaultPublishOnQueue().publish(new OuvreOngletAbstractEntityEvent(abstractEntity, editViewURI, selectedTabIndex));
 	}
 
 	@Command
 	public void ouvreOngletGeneric(String label, String viewURI) {
-		defaultPublishOnShinigamiQueue().publish(new OuvreOngletGenericEvent(label, viewURI));
+		defaultPublishOnQueue().publish(new OuvreOngletGenericEvent(label, viewURI));
 	}
 
 	/**
@@ -143,7 +143,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	 * @param abstractEntity entité concernée
 	 */
 	public void fermeOnglet(@BindingParam("entity") T abstractEntity) {
-		defaultPublishOnShinigamiQueue().publish(new FermeOngletAbstractEntityEvent(abstractEntity));
+		defaultPublishOnQueue().publish(new FermeOngletAbstractEntityEvent(abstractEntity));
 	}
 
 	/**
@@ -159,7 +159,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	 */
 	@Command
 	public void rechargeOngletListe() {
-		defaultPublishOnShinigamiQueue().publish(new RechargeOngletListAbstractEntityEvent(entity));
+		defaultPublishOnQueue().publish(new RechargeOngletListAbstractEntityEvent(entity));
 	}
 
 	/**
@@ -171,12 +171,12 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	 * @param selectedTabIndex le sous onglet selectionné
 	 */
 	protected void rechargeOnglet(AbstractEntity abstractEntity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
-		defaultPublishOnShinigamiQueue().publish(new RechargeOngletAbstractEntityEvent(abstractEntity, editViewURI, titreOnglet, selectedTabIndex));
+		defaultPublishOnQueue().publish(new RechargeOngletAbstractEntityEvent(abstractEntity, editViewURI, titreOnglet, selectedTabIndex));
 	}
 
 	protected void refreshOngletGeneric(String titreOnglet, String viewUri) {
 		RechargeOngletGenericEvent event = new RechargeOngletGenericEvent(titreOnglet, viewUri);
-		defaultPublishOnShinigamiQueue().publish(event);
+		defaultPublishOnQueue().publish(event);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	 */
 	@Command
 	public void updateOnglet(@BindingParam("entity") T abstractEntity) {
-		defaultPublishOnShinigamiQueue().publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
+		defaultPublishOnQueue().publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
 	}
 
 	public GenericService<T> getService() {
@@ -346,8 +346,8 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 		return windowEntity;
 	}
 
-	protected EventQueue defaultPublishOnShinigamiQueue() {
-		return EventQueues.lookup("shinigamiQueue", EventQueues.DESKTOP, true);
+	protected EventQueue defaultPublishOnQueue() {
+		return EventQueues.lookup("appQueue", EventQueues.DESKTOP, true);
 	}
 
 	public Validator getValidator() {
@@ -371,7 +371,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 		args.put("selected" + simpleName, abstractEntity);
 		args.put("popup" + simpleName, abstractEntityPopup);
 		try {
-			Executions.createComponents("/layout/edit" + simpleName + ".zul", null, args);
+			Executions.createComponents("~./zul/includes/edit" + simpleName + ".zul", null, args);
 		} catch (UiException e) {
 			// On ne fait rien, simplement pour corriger le problème de quatruple clic
 		}
