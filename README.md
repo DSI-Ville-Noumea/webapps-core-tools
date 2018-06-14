@@ -1,3 +1,6 @@
+[![](https://jitpack.io/v/DSI-Ville-Noumea/webapps-core-tools.svg)](https://jitpack.io/#DSI-Ville-Noumea/webapps-core-tools)
+
+
 # webapps-core-tools
 
 Ensemble de classes et patterns utilitaires. 
