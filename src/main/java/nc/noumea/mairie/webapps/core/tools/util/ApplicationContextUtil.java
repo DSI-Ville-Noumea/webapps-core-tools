@@ -46,8 +46,6 @@ public class ApplicationContextUtil implements ApplicationContextAware {
 	 * passage par une méthode statique pour éviter anomalie dans les rapports findbug/pmd
 	 */
 	public static void setApplicationContextStatic(ApplicationContext appContext) {
-		if (applicationContext != null)
-			throw new TechnicalException("ApplicationContext déjà injecté !");
 		applicationContext = appContext;
 	}
 
