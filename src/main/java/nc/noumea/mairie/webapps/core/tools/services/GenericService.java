@@ -25,18 +25,19 @@ package nc.noumea.mairie.webapps.core.tools.services;
 
 import java.util.List;
 
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
-public interface GenericService<T> {
+public interface GenericService<T extends AbstractEntity> {
 
 	Class<? extends T> getClasseReferente();
 
 	<S extends T> S save(S var1);
 
-	<S extends T> Iterable<S> save(Iterable<S> var1);
+	<S extends T> Iterable<S> saveAll(Iterable<S> var1);
 
 	T findOne(Long var1);
 

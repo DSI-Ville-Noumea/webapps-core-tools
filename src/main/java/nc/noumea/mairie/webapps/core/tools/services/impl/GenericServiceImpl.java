@@ -72,7 +72,7 @@ public abstract class GenericServiceImpl<T extends AbstractEntity> implements Ge
 	}
 
 	@Override
-	public <S extends T> Iterable<S> save(Iterable<S> var1) {
+	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
 		return getRepository().saveAll(var1);
 	}
 
