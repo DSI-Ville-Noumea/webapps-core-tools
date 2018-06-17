@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.05-SNAPSHOT</version>
+    <version>1.00.05</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -294,12 +294,16 @@
                     <execution>
                         <id>java-compile</id>
                         <phase>compile</phase>
-                        <goals> <goal>compile</goal> </goals>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
                     </execution>
                     <execution>
                         <id>java-test-compile</id>
                         <phase>test-compile</phase>
-                        <goals> <goal>testCompile</goal> </goals>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
                     </execution>
                     <execution>
                         <id>compile</id>
