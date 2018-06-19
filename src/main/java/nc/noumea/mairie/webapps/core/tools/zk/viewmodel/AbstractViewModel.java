@@ -10,18 +10,17 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +50,7 @@ import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.services.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
@@ -371,7 +370,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 		args.put("selected" + simpleName, abstractEntity);
 		args.put("popup" + simpleName, abstractEntityPopup);
 		try {
-			Executions.createComponents("~./zul/includes/edit" + simpleName + ".zul", null, args);
+			Executions.createComponents("~./zul/includes" + ("/" + simpleName) + "/edit" + simpleName + ".zul", null, args);
 		} catch (UiException e) {
 			// On ne fait rien, simplement pour corriger le problème de quatruple clic
 		}

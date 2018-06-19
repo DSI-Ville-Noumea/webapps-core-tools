@@ -10,24 +10,23 @@ package nc.noumea.mairie.webapps.core.tools.services.impl;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import nc.noumea.mairie.webapps.core.error.BusinessException;
-import nc.noumea.mairie.webapps.core.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.services.GenericService;
-import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,29 +34,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
+import nc.noumea.mairie.webapps.core.tools.services.GenericService;
+import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
 
-public abstract class GenericServiceImpl<T extends AbstractEntity> implements GenericService<T> {
+public abstract class GenericServiceImpl<T extends AbstractEntity, R extends PagingAndSortingRepository> implements GenericService<T> {
 
 	@Autowired
-	private ApplicationContext applicationContext;
+	private ApplicationContext	applicationContext;
 
-	private PagingAndSortingRepository repository;
+	private R					repository;
 
-	protected PagingAndSortingRepository getRepository() {
-		if (this.repository == null){
-			this.repository = (PagingAndSortingRepository)applicationContext.getBean(getRepositoryBeanName());
-			if (this.repository == null){
+	protected R getRepository() {
+		if (this.repository == null) {
+			this.repository = (R) applicationContext.getBean(getRepositoryBeanName());
+			if (this.repository == null) {
 				throw new TechnicalException("Impossible de trouver le bean " + getRepositoryBeanName());
 			}
 		}
 		return repository;
 	}
 
-	private String getRepositoryBeanName(){
+	private String getRepositoryBeanName() {
 		return StringUtils.uncapitalize(getClasseReferente().getSimpleName()) + "Repository";
 	}
 
@@ -112,7 +111,7 @@ public abstract class GenericServiceImpl<T extends AbstractEntity> implements Ge
 
 	@Override
 	public void delete(Long var1) {
-		getRepository().delete(var1);
+		getRepository().deleteById(var1);
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public abstract class GenericServiceImpl<T extends AbstractEntity> implements Ge
 
 	@Override
 	public void delete(Iterable<? extends T> var1) {
-		getRepository().delete(var1);
+		getRepository().deleteAll(var1);
 	}
 
 	@Override
