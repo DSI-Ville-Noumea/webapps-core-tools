@@ -22,9 +22,11 @@ package nc.noumea.mairie.webapps.core.tools.service;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,10 +34,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
+import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
 
 public abstract class GenericService<T extends AbstractEntity, R extends PagingAndSortingRepository> {
 
