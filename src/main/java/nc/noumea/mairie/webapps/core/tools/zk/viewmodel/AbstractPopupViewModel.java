@@ -54,7 +54,6 @@ public abstract class AbstractPopupViewModel<T extends AbstractEntity> {
 	}
 
 	@Command
-	@NotifyChange("popupVisible")
 	public void cancel(@ContextParam(ContextType.TRIGGER_EVENT) Event event) {
 		event.stopPropagation();
 		closePopup();
