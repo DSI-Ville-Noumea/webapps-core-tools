@@ -107,7 +107,7 @@ public abstract class GenericService<T extends AbstractEntity, R extends PagingA
 		getRepository().delete(var1);
 	}
 
-	public void delete(Iterable<? extends T> var1) {
+	public void deleteAll(Iterable<? extends T> var1) {
 		getRepository().deleteAll(var1);
 	}
 

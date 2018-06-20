@@ -21,16 +21,15 @@
  */
 package nc.noumea.mairie.webapps.core.error
 
-import org.assertj.core.api.Assertions
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.junit.Assert
 import org.junit.Test
 
 class TechnicalExceptionTest {
 
     @Test
-    fun testTechnicalException(){
+    fun testTechnicalException() {
         val message = "ouh yeah"
         try {
             throw TechnicalException(message)

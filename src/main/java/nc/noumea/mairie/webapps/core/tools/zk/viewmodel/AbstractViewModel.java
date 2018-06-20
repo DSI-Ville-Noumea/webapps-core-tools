@@ -10,17 +10,18 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractViewModel<T extends AbstractEntity> {
+public abstract class AbstractViewModel<T extends AbstractEntity> extends AbstractPopupViewModel<T> {
 
 	private static Logger	log	= LoggerFactory.getLogger(AbstractViewModel.class);
 
@@ -89,7 +90,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	/**
 	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration).
 	 *
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.shinigami.enums.TypeConfig")
+	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.allodb.enums.TypeConfig")
 	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration.
 	 */
 	public ListModelList<?> getListeEnum(String enumClassName) {
@@ -99,7 +100,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	/**
 	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration), avec la possibilité d'insérer en tête la valeur null.
 	 *
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.shinigami.enums.TypeConfig")
+	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.allodb.enums.TypeConfig")
 	 * @param insertNull indique s'il faut insérer en tête de la liste résultat la valeur null
 	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration (avec null en tête optionnellement)
 	 */
