@@ -1,4 +1,4 @@
-package nc.noumea.mairie.webapps.core.tools.services.impl;
+package nc.noumea.mairie.webapps.core.tools.service;
 
 /*-
  * #%L
@@ -36,10 +36,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.services.GenericService;
 import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
 
-public abstract class GenericServiceImpl<T extends AbstractEntity, R extends PagingAndSortingRepository> implements GenericService<T> {
+public abstract class GenericService<T extends AbstractEntity, R extends PagingAndSortingRepository> {
 
 	@Autowired
 	private ApplicationContext	applicationContext;
@@ -60,22 +59,18 @@ public abstract class GenericServiceImpl<T extends AbstractEntity, R extends Pag
 		return StringUtils.uncapitalize(getClasseReferente().getSimpleName()) + "Repository";
 	}
 
-	@Override
 	public Class<? extends T> getClasseReferente() {
 		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	@Override
 	public <S extends T> S save(S var1) {
 		return (S) getRepository().save(var1);
 	}
 
-	@Override
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
 		return getRepository().saveAll(var1);
 	}
 
-	@Override
 	public T findOneOrNull(Long id) {
 		Optional<T> optionalT = getRepository().findById(id);
 		if (optionalT.isPresent())
@@ -83,53 +78,43 @@ public abstract class GenericServiceImpl<T extends AbstractEntity, R extends Pag
 		return null;
 	}
 
-	@Override
 	public T findOne(Long id) {
 		Optional<T> optionalT = getRepository().findById(id);
 		return optionalT.get();
 	}
 
-	@Override
 	public boolean exists(Long id) {
 		return getRepository().existsById(id);
 	}
 
-	@Override
 	public Iterable<T> findAll() {
 		return getRepository().findAll();
 	}
 
-	@Override
 	public Page<T> findAll(Pageable pageable) {
 		return getRepository().findAll(pageable);
 	}
 
-	@Override
 	public long count() {
 		return getRepository().count();
 	}
 
-	@Override
 	public void delete(Long var1) {
 		getRepository().deleteById(var1);
 	}
 
-	@Override
 	public void delete(T var1) {
 		getRepository().delete(var1);
 	}
 
-	@Override
 	public void deleteAll(Iterable<? extends T> var1) {
 		getRepository().deleteAll(var1);
 	}
 
-	@Override
 	public void deleteAll() {
 		getRepository().deleteAll();
 	}
 
-	@Override
 	public List<T> construitListeActifInactif(List<T> liste) {
 		List<T> result = new ArrayList<>();
 		Class classe = ((T) new Object()).getClass();

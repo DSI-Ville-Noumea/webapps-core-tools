@@ -50,7 +50,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.services.GenericService;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
@@ -189,8 +189,8 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 		defaultPublishOnQueue().publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
 	}
 
-	public GenericService<T> getService() {
-		return (GenericService<T>) ApplicationContextUtil.getApplicationContext().getBean(StringUtils.uncapitalize(getEntityName()) + "Service");
+	public GenericService<T, ?> getService() {
+		return (GenericService<T, ?>) ApplicationContextUtil.getApplicationContext().getBean(StringUtils.uncapitalize(getEntityName()) + "Service");
 	}
 
 	/**
