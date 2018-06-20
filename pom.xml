@@ -41,7 +41,7 @@
         <imgscalr.lib.version>4.2</imgscalr.lib.version>
         <com.ibm.icu.icu4j.version>61.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
-        <zk.version>8.5.1.2</zk.version>
+        <zk.version>8.5.0</zk.version>
         <com.googlecode.libphonenumber.version>8.9.7</com.googlecode.libphonenumber.version>
 
         <!--plugins versions-->
@@ -69,10 +69,6 @@
             <id>ZK CE</id>
             <name>ZK CE Repository</name>
             <url>http://mavensync.zkoss.org/maven2</url>
-        </repository>
-        <repository>
-            <id>ZK EE</id>
-            <url>https://maven.zkoss.org/repo/zk/ee</url>
         </repository>
     </repositories>
 
