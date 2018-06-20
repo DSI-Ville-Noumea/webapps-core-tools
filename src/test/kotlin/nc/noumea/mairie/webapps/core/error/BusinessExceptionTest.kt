@@ -21,6 +21,7 @@
  */
 package nc.noumea.mairie.webapps.core.error
 
+import nc.noumea.mairie.webapps.core.tools.error.BusinessException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
@@ -28,7 +29,7 @@ import org.junit.Test
 class BusinessExceptionTest {
 
     @Test
-    fun testBusinessException(){
+    fun testBusinessException() {
         val message = "ouh yeah"
         try {
             throw BusinessException(message)
