@@ -53,7 +53,7 @@ public interface GenericService<T extends AbstractEntity> {
 
 	void delete(T var1);
 
-	void delete(Iterable<? extends T> var1);
+	void deleteAll(Iterable<? extends T> var1);
 
 	void deleteAll();
 
