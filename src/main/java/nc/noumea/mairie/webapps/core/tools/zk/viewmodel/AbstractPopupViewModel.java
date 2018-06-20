@@ -22,7 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Window;
@@ -36,7 +35,7 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
  * @author AgileSoft.NC
  */
 @Init(superclass = true)
-public abstract class AbstractPopupViewModel<T extends AbstractEntity> extends AbstractViewModel<T> {
+public abstract class AbstractPopupViewModel<T extends AbstractEntity> {
 
 	Window popup;
 
@@ -48,35 +47,13 @@ public abstract class AbstractPopupViewModel<T extends AbstractEntity> extends A
 		this.popup = popup;
 	}
 
-	/**
-	 * Astuce pour forcer le vidage des combos-box sur apparition des popups qui utilisent des combos
-	 *
-	 * @return null
-	 */
-	@DependsOn({ "popupVisible" })
-	public String getComboVide() {
-		return null;
-	}
-
-	boolean popupVisible = false;
-
-	public boolean isPopupVisible() {
-		return popupVisible;
-	}
-
-	public void setPopupVisible(boolean popupVisible) {
-		this.popupVisible = popupVisible;
-	}
-
 	public void closePopup() {
 		if (popup != null) {
 			popup.detach();
 		}
-		this.popupVisible = false;
 	}
 
 	@Command
-	@NotifyChange("popupVisible")
 	public void cancel(@ContextParam(ContextType.TRIGGER_EVENT) Event event) {
 		event.stopPropagation();
 		closePopup();

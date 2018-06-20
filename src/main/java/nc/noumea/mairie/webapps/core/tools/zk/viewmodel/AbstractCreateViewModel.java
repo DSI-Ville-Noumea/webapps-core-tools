@@ -22,7 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.Selectors;
@@ -36,7 +35,7 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends AbstractPopupViewModel<T> {
+public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends AbstractViewModel<T> {
 
 	protected boolean openAfterCreate() {
 		return true;
@@ -56,7 +55,11 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		if (view != null) {
-			setPopup((Window) Selectors.iterable(view, "#create" + super.getEntityClass().getSimpleName()).iterator().next());
+			Window window = (Window) Selectors.iterable(view, "#create" + super.getEntityClass().getSimpleName()).iterator().next();
+			if (window == null) {
+				window = (Window) Selectors.iterable(view, "window").iterator().next();
+			}
+			setPopup(window);
 		}
 	}
 
@@ -65,14 +68,13 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 	 * l'entité.
 	 */
 	@Command
-	@NotifyChange({ "entity", "popupVisible" })
+	@NotifyChange("entity")
 	public void save() {
 		if (AbstractViewModel.showErrorPopup(this.entity)) {
 			return;
 		}
 		entity = getService().save(entity);
 		postGlobalCommandRefreshListe();
-		this.setPopupVisible(false);
 		closePopup();
 		if (this.openAfterCreate()) {
 			this.ouvreOnglet(entity, null, null);
@@ -87,6 +89,5 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 	 */
 	protected void createEntityInNewWindow() throws InstantiationException, IllegalAccessException {
 		this.entity = createEntity();
-		this.setPopupVisible(true);
 	}
 }

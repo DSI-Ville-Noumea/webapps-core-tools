@@ -120,7 +120,7 @@ public abstract class GenericServiceImpl<T extends AbstractEntity, R extends Pag
 	}
 
 	@Override
-	public void delete(Iterable<? extends T> var1) {
+	public void deleteAll(Iterable<? extends T> var1) {
 		getRepository().deleteAll(var1);
 	}
 
