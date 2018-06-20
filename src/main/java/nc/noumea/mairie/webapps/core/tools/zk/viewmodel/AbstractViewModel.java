@@ -22,14 +22,12 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +50,7 @@ import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.services.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
@@ -65,7 +64,7 @@ import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractViewModel<T extends AbstractEntity> {
+public abstract class AbstractViewModel<T extends AbstractEntity> extends AbstractPopupViewModel<T> {
 
 	private static Logger	log	= LoggerFactory.getLogger(AbstractViewModel.class);
 
@@ -90,7 +89,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	/**
 	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration).
 	 *
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.shinigami.enums.TypeConfig")
+	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.allodb.enums.TypeConfig")
 	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration.
 	 */
 	public ListModelList<?> getListeEnum(String enumClassName) {
@@ -100,7 +99,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 	/**
 	 * Méthode utilitaire, pour lister les valeurs d'une énumération (dans l'ordre de leur déclaration), avec la possibilité d'insérer en tête la valeur null.
 	 *
-	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.shinigami.enums.TypeConfig")
+	 * @param enumClassName nom complet de la classe (avec le package, ex : "nc.noumea.mairie.allodb.enums.TypeConfig")
 	 * @param insertNull indique s'il faut insérer en tête de la liste résultat la valeur null
 	 * @return la liste des valeurs énumérées, dans l'ordre de leur déclaration (avec null en tête optionnellement)
 	 */
@@ -371,7 +370,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> {
 		args.put("selected" + simpleName, abstractEntity);
 		args.put("popup" + simpleName, abstractEntityPopup);
 		try {
-			Executions.createComponents("~./zul/includes/edit" + simpleName + ".zul", null, args);
+			Executions.createComponents("~./zul/includes/" + simpleName + "/edit" + simpleName + ".zul", null, args);
 		} catch (UiException e) {
 			// On ne fait rien, simplement pour corriger le problème de quatruple clic
 		}
