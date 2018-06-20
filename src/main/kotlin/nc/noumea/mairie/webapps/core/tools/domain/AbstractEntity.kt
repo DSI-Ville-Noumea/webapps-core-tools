@@ -23,11 +23,10 @@ package nc.noumea.mairie.webapps.core.tools.domain
  */
 
 
-import java.io.Serializable
-
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil
+import java.io.Serializable
 
 /**
  * Entité abstraite parente des entités persistées de l'application.
@@ -90,7 +89,7 @@ abstract class AbstractEntity : Serializable {
      * déclarées ou des erreurs spécifiques métier. Ne doit pas retourner null (mais une liste vide dans le cas où il n'y a pas d'erreur). La liste
      * retournée doit être mutable pour permettre aux classes filles d'ajouter d'autres erreurs.
      */
-    fun construitListeMessageErreur(): List<MessageErreur> {
+    open fun construitListeMessageErreur(): List<MessageErreur> {
         return MessageErreurUtil.construitListeMessageErreurViolationContrainte(this)
     }
 
