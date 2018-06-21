@@ -126,7 +126,7 @@ public abstract class GenericService<T extends AbstractEntity, R extends PagingA
 		List<T> listeInactif = new ArrayList<>();
 		for (T element : liste) {
 			if (element instanceof ActifInactif) {
-				if (((ActifInactif) element).isActif()) {
+				if (((ActifInactif) element).getActif()) {
 					listeActif.add(element);
 				} else {
 					listeInactif.add(element);
