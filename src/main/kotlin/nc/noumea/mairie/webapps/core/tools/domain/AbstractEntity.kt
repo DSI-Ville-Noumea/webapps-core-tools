@@ -40,11 +40,11 @@ abstract class AbstractEntity : Serializable {
 
     abstract val version: Int?
 
+    abstract val libelleCourt: String?
+
     fun getMaxLength(property: String): Int {
         return EntityUtil.getMaxLength(this, property)!!
     }
-
-    abstract fun getLibelleCourt(): String
 
     override fun hashCode(): Int {
         val prime = 31
@@ -81,7 +81,7 @@ abstract class AbstractEntity : Serializable {
      * Implémentation par défaut, peut-être redéfinie par les classes filles
      */
     override fun toString(): String {
-        return getLibelleCourt()
+        return libelleCourt.orEmpty()
     }
 
     /**

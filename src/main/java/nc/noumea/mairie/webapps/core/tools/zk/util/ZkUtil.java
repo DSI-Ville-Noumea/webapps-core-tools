@@ -10,25 +10,23 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.BindContext;
 import org.zkoss.bind.BindUtils;
@@ -42,6 +40,7 @@ import org.zkoss.zul.Row;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
 import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
 import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
@@ -129,12 +128,12 @@ public class ZkUtil {
 		return null;
 	}
 
-	public static void deleteReferentielElement(CrudRepository crudRepository, AbstractEntity abstractEntity, Class entityClass) {
+	public static void deleteReferentielElement(GenericService genericService, AbstractEntity abstractEntity, Class entityClass) {
 		Messagebox.show("Voulez-vous vraiment supprimer cet élément ?", "Suppression", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
 				Messagebox.QUESTION, evt -> {
 					if (evt.getName().equals("onYes")) {
 						try {
-							crudRepository.delete(abstractEntity.getId());
+							genericService.delete(abstractEntity.getId());
 							BindUtils.postGlobalCommand(null, null, "refreshListe" + getSimpleNameOfClass(entityClass), null);
 						} catch (JpaSystemException e) {
 							Messagebox.show("Vous ne pouvez pas supprimer cet élément car il est utilisé dans l'application", "Suppression refusée",
