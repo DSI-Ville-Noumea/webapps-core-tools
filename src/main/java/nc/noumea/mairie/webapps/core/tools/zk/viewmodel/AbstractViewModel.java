@@ -371,7 +371,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 		args.put("selected" + simpleName, abstractEntity);
 		args.put("popup" + simpleName, abstractEntityPopup);
 		try {
-			Executions.createComponents("~./zul/includes" + ("/" + simpleName) + "/edit" + simpleName + ".zul", null, args);
+			Executions.createComponents("~./zul/includes" + "/" + simpleName.toLowerCase() + "/edit" + simpleName + ".zul", null, args);
 		} catch (UiException e) {
 			// On ne fait rien, simplement pour corriger le problème de quatruple clic
 		}
