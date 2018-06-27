@@ -27,18 +27,21 @@ import nc.noumea.mairie.webapps.core.tools.util.EntityUtil
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil
 import java.io.Serializable
+import javax.persistence.MappedSuperclass
+import javax.persistence.Version
 
 /**
  * Entité abstraite parente des entités persistées de l'application.
  *
  * @author AgileSoft.NC
  */
+@MappedSuperclass
 abstract class AbstractEntity : Serializable {
-
 
     abstract val id: Long?
 
-    abstract val version: Int?
+    @Version
+    open val version: Int = 0
 
     abstract val libelleCourt: String?
 
@@ -53,25 +56,25 @@ abstract class AbstractEntity : Serializable {
         return result
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (this::class != obj::class) {
+        if (this::class != other::class) {
             return false
         }
-        val other = obj as AbstractEntity?
+        val otherAbstractEntity = other as AbstractEntity?
 
-        if (id == null && other!!.id == null) {
-            return super.equals(obj)
+        if (id == null && otherAbstractEntity!!.id == null) {
+            return super.equals(other)
         }
 
         // cas où les 2 possédent un id : ils sont considérés égaux si c'est le même id
-        return if (id != null && other!!.id != null) {
-            id == other.id
+        return if (id != null && otherAbstractEntity!!.id != null) {
+            id == otherAbstractEntity.id
         } else false
 
         // un id est null, l'autre non
