@@ -27,18 +27,21 @@ import nc.noumea.mairie.webapps.core.tools.util.EntityUtil
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil
 import java.io.Serializable
+import javax.persistence.MappedSuperclass
+import javax.persistence.Version
 
 /**
  * Entité abstraite parente des entités persistées de l'application.
  *
  * @author AgileSoft.NC
  */
+@MappedSuperclass
 abstract class AbstractEntity : Serializable {
-
 
     abstract val id: Long?
 
-    abstract val version: Int?
+    @Version
+    open val version: Int = 0
 
     abstract val libelleCourt: String?
 
