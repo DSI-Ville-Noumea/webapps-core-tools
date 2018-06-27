@@ -23,8 +23,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  */
 
 
-import javax.persistence.OptimisticLockException;
-
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -33,8 +33,7 @@ import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zul.Messagebox;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
+import javax.persistence.OptimisticLockException;
 
 /**
  * ViewModel abstrait parent des ViewModel de modification (qui permettent de modifier une entité dans un onglet).

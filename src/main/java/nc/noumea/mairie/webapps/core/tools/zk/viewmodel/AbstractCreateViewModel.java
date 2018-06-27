@@ -22,12 +22,11 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Window;
-
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 
 /**
  * ViewModel abstrait parent des ViewModel de création (qui permettent de créer une nouvelle entité dans une popup).
