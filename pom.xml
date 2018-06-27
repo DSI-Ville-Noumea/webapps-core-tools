@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.14-SNAPSHOT</version>
+    <version>1.00.15-SNAPSHOT</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
