@@ -162,6 +162,16 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 		defaultPublishOnQueue().publish(new RechargeOngletListAbstractEntityEvent(entity));
 	}
 
+	@Command
+	public void ouvrePopupCreation() {
+		String entityName = getEntityName();
+		try {
+			ouvrePopupCreation(String.format("~./zul/includes/%s/create%s.zul", entityName.toLowerCase(), entityName));
+		} catch (Exception e) {
+			log.error(String.format("Erreur ouvrePopupCreation, entité = %s", entityName));
+		}
+	}
+
 	/**
 	 * Publie un événement de demande de recharge de l'entity, dans l'onglet couramment sélectionné (ou dans l'onglet indiqué)
 	 *
