@@ -284,7 +284,9 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	}
 
 	public void postGlobalCommandRefreshListe() {
-		BindUtils.postGlobalCommand(null, null, "refreshListe" + getEntityName(), null);
+		final Map<String, Object> args = new HashMap<String, Object>();
+		args.put("entityClass", getEntityClass());
+		BindUtils.postGlobalCommand(null, null, "refreshListeGlobal", args);
 	}
 
 	/**
