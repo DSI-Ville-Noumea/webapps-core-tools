@@ -23,12 +23,18 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  */
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zkoss.bind.annotation.BindingParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zul.ListModelList;
 
 import com.google.common.collect.Lists;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+
+import java.lang.reflect.ParameterizedType;
 
 /**
  * ViewModel abstrait parent des ViewModel de liste (qui permettent de visualiser dans une grille des entités).
@@ -37,6 +43,8 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
  * @author AgileSoft.NC
  */
 public abstract class AbstractListeViewModel<T extends AbstractEntity> extends AbstractViewModel<T> {
+
+	private static Logger log = LoggerFactory.getLogger(AbstractListeViewModel.class);
 
 	protected ListModelList<T> listeEntity;
 
@@ -62,6 +70,22 @@ public abstract class AbstractListeViewModel<T extends AbstractEntity> extends A
 	public void refreshListe() {
 		listeEntity.clear();
 		listeEntity.addAll(Lists.newArrayList(getService().findAll())); // par défaut, charge tout
+	}
+
+	/**
+	 * Rafraîchit globalement la liste, si la classe en argument est la classe entity (ou une sous-classe)
+	 * @param entityClass
+	 */
+	@GlobalCommand
+	public void refreshListeGlobal(@BindingParam("entityClass") Class entityClass) {
+		try {
+			if (Class.forName(entityClass.getName()).isAssignableFrom(Class.forName(getEntityClass().getName()))) {
+				// note : test un peu compliqué, mais pas de solution plus simple identifiée (le passage par le Class.forName semble obligatoire, sinon la condition renvoie toujours false)
+				refreshListe();
+			}
+		} catch (ClassNotFoundException e) {
+			log.error("Classe non trouvée", e);
+		}
 	}
 
 	/**
