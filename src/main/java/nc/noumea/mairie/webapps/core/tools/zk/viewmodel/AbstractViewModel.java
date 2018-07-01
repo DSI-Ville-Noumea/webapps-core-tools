@@ -50,6 +50,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
@@ -213,7 +214,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	}
 
 	/**
-	 * Retourne la classe paramétré de l'AbstractViewModel courant.
+	 * If this Class represents either the Object class, an interface, a primitive type, or void, then null is returned.
 	 *
 	 * @return ex : Projet.class dans le cas d'un ViewModel paramétré par T = Projet.
 	 */
@@ -224,9 +225,11 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 
 	@SuppressWarnings("unchecked")
 	private Class<T> getEntityClass(Type type) {
-		try {
+		if (type instanceof ParameterizedType) {
 			return (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
-		} catch (ClassCastException e) {
+		} else if (getClass().getSuperclass() == null) {
+			throw new TechnicalException("Impossible de récupérer le type de la classe " + getClass().toString());
+		} else {
 			return getEntityClass(getClass().getSuperclass().getGenericSuperclass());
 		}
 	}
