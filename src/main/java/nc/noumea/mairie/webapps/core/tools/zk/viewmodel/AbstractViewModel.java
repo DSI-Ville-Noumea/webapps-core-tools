@@ -22,8 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -219,7 +219,16 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> getEntityClass() {
-		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		return getEntityClass(getClass().getGenericSuperclass());
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<T> getEntityClass(Type type) {
+		try {
+			return (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
+		} catch (ClassCastException e) {
+			return getEntityClass(getClass().getSuperclass().getGenericSuperclass());
+		}
 	}
 
 	/**
