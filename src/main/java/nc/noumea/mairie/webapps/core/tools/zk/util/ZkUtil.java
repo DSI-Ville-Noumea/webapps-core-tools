@@ -22,8 +22,12 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  * #L%
  */
 
-import java.lang.reflect.Method;
-
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
+import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
+import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +42,7 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
-import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
-import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
+import java.lang.reflect.Method;
 
 public class ZkUtil {
 
@@ -179,6 +178,21 @@ public class ZkUtil {
 
 	public static String construitLibelleTab(int nombreElement, String titre) {
 		return titre + (nombreElement > 0 ? " (" + nombreElement + ")" : "");
+	}
+
+	public static Component getParentViewWithViewModel(Component view) {
+		Component parent = view.getParent();
+		while (parent != null) {
+			Object parentViewModel = getViewModel(parent);
+			if (parentViewModel != null)
+				return parent;
+			parent = parent.getParent();
+		}
+		return null;
+	}
+
+	public static Object getViewModel(Component view) {
+		return view.getAttribute("$VM$");
 	}
 
 }
