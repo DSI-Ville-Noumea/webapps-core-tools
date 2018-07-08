@@ -22,12 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
-import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
-import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
+import java.lang.reflect.Method;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +38,12 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
-import java.lang.reflect.Method;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
+import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
+import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
 
 public class ZkUtil {
 
