@@ -214,9 +214,8 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	}
 
 	/**
-	 * If this Class represents either the Object class, an interface, a primitive type, or void, then null is returned.
-	 *
-	 * @return ex : Projet.class dans le cas d'un ViewModel paramétré par T = Projet.
+	 * @return la classe paramétrée du viewModel courant ou du viewModel dont on hérite. (ex : Projet.class dans le cas d'un ViewModel paramétré par T =
+	 *         Projet). léve une TechnicalException si on n'arrive pas à trouver de classe paramétrée.
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> getEntityClass() {
