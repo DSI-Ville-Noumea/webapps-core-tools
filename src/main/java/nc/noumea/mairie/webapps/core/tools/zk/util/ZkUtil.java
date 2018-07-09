@@ -181,4 +181,19 @@ public class ZkUtil {
 		return titre + (nombreElement > 0 ? " (" + nombreElement + ")" : "");
 	}
 
+	public static Component getParentViewWithViewModel(Component view) {
+		Component parent = view.getParent();
+		while (parent != null) {
+			Object parentViewModel = getViewModel(parent);
+			if (parentViewModel != null)
+				return parent;
+			parent = parent.getParent();
+		}
+		return null;
+	}
+
+	public static Object getViewModel(Component view) {
+		return view.getAttribute("$VM$");
+	}
+
 }
