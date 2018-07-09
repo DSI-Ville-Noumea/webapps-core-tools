@@ -56,7 +56,7 @@ public abstract class GenericService<T extends AbstractEntity, R extends PagingA
 		return repository;
 	}
 
-	private String getRepositoryBeanName() {
+	protected String getRepositoryBeanName() {
 		return StringUtils.uncapitalize(getClasseReferente().getSimpleName()) + "Repository";
 	}
 
