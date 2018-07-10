@@ -7,6 +7,7 @@ abstract class ReflectUtil {
         /**
          * Permet de trouver un objet depuis un chemin
          * Ex: findObjectFromPath("monObjet.monSousObjet.monObjetCherche", monObjetRacine) retourne monObjetRacine.monObjet.monSousObjet.monObjetCherche
+         * Renvoie null si l'objet cible est null ou si un de ses parents est null : meme principe qu'en kotlin : monObjet?.monSousObjet?.monObjetCherche
          */
         fun findObjectFromPath(path: String, root: Any): Any? {
             val objectName = if (path.contains('.')) path.split('.')[0] else path
