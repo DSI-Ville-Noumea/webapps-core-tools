@@ -33,7 +33,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         /**
          * Exemple : "uppercase_rootObjet.sousObjet.propriete"
          */
-        private val EXPRESSION_REGEXP = "([^_]+_)?(.+)".toRegex()
+        private val EXPRESSION_REGEXP = "(.+_)?([^_]+)".toRegex()
     }
 
     private val logger = LoggerFactory.getLogger(AbstractTemplateDocxTagResolver::class.java)
@@ -43,7 +43,11 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         val rootObjectName = resolvePathRootObjectName(path)
         val obj = resolvePathRootObject(rootObjectName)
         val value = if (obj != null) ReflectUtil.findObjectFromPath(path.replaceFirst("$rootObjectName.", ""), obj) else resolveSimpleName(path)
-        return processGenericFunction(getFunction(tagName), value)
+
+        val functions = getFunction(tagName).split('_')
+        var result = value
+        functions.forEach { result = processGenericFunction(it, result) }
+        return result as String?
     }
 
     protected open fun resolvePathRootObjectName(path: String): String {
@@ -60,9 +64,9 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
 
     protected open fun processGenericFunction(functionName: String, value: Any?): String? {
         return when (functionName) {
-            "uppercase_" -> value?.toString()?.toUpperCase()
-            "lowercase_" -> value?.toString()?.toLowerCase()
-            "formatDateAvecMoisEnTexte_" -> DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "uppercase" -> value?.toString()?.toUpperCase()
+            "lowercase" -> value?.toString()?.toLowerCase()
+            "formatDateAvecMoisEnTexte" -> DateUtil.formatDateAvecMoisEnTexte(value as Date)
             else -> {
                 if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
                 return value?.toString()

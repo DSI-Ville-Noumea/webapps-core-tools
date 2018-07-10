@@ -22,15 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import java.io.File;
-import java.io.StringReader;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.StringReader;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
@@ -212,7 +211,11 @@ public class TemplateDocx {
 
 		List<Object> listeCustomField = getAllCustomField(wordMLPackage);
 		for (Object customField : listeCustomField) {
-			String tagName = StringUtils.trim(((SdtElement) customField).getSdtPr().getTag().getVal());
+			Tag tag = ((SdtElement) customField).getSdtPr().getTag();
+			if (tag == null) {
+				continue;
+			}
+			String tagName = StringUtils.trim(tag.getVal());
 			if (StringUtils.isBlank(tagName)) {
 				continue;
 			}
@@ -275,9 +278,10 @@ public class TemplateDocx {
 			// définition de la valeur du noeud
 			String tagValue = null;
 			for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
-				tagValue = tagResolver.resolve(tagName);
-				if (tagValue != null) {
-					break;
+				String result = tagResolver.resolve(tagName);
+				// Les prochains resolvers de la liste peuvent overrider le résultat
+				if (result != null) {
+					tagValue = result;
 				}
 			}
 
