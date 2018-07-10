@@ -28,22 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
-import org.zkoss.bind.BindContext;
 import org.zkoss.bind.BindUtils;
-import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.mail.PieceJointeMail;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.FormatUtil;
-import nc.noumea.mairie.webapps.core.tools.util.IOUtil;
-import nc.noumea.mairie.webapps.core.tools.zk.viewmodel.AbstractViewModel;
 
 public class ZkUtil {
 
@@ -142,39 +135,6 @@ public class ZkUtil {
 						}
 					}
 				});
-	}
-
-	public static PieceJointeMail uploadPieceJointe(BindContext ctx, AbstractViewModel viewModel, String nomPieceJointe, Integer tailleMaxPieceJointeEnMo,
-			boolean pdfUniquement) {
-		UploadEvent upEvent = null;
-		Object objUploadEvent = ctx.getTriggerEvent();
-		if (objUploadEvent != null && (objUploadEvent instanceof UploadEvent)) {
-			upEvent = (UploadEvent) objUploadEvent;
-		}
-		if (upEvent != null) {
-			Media media = upEvent.getMedia();
-			if (media != null) {
-				if (pdfUniquement && !media.getFormat().equals("pdf")) {
-					Messagebox.show("Vous devez importer un fichier PDF");
-					return null;
-				}
-				byte[] contenu = media.getByteData();
-				double tailleFichierEnMo = contenu.length / (1024.0 * 1024.0);
-
-				if (tailleMaxPieceJointeEnMo != null && tailleFichierEnMo > tailleMaxPieceJointeEnMo) {
-					Messagebox.show("Pièce trop grande, le fichier fait " + FormatUtil.formatteAvec2ChiffreApresVirgule(tailleFichierEnMo, false)
-							+ " Mo, et la limite est de " + tailleMaxPieceJointeEnMo + "Mo");
-					return null;
-				}
-				PieceJointeMail pieceJointe = new PieceJointeMail();
-				pieceJointe.setNomFichier(media.getName());
-				pieceJointe.setContenu(contenu);
-				pieceJointe.setMimeType(IOUtil.getMimeType(contenu));
-				AbstractViewModel.notifyChange(nomPieceJointe, viewModel);
-				return pieceJointe;
-			}
-		}
-		return null;
 	}
 
 	public static String construitLibelleTab(int nombreElement, String titre) {
