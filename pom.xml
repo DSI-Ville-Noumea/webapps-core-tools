@@ -55,7 +55,6 @@
         <junit.vintage.version>5.2.0</junit.vintage.version>
         <assertj.version>3.10.0</assertj.version>
         <h2.version>1.4.197</h2.version>
-        <spring-boot-starter-mail.version>2.0.3.RELEASE</spring-boot-starter-mail.version>
     </properties>
 
     <scm>
@@ -227,11 +226,6 @@
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-            <version>${spring-boot-starter-mail.version}</version>
         </dependency>
     </dependencies>
 
