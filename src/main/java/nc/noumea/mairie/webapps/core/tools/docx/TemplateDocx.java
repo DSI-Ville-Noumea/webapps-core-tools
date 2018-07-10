@@ -10,18 +10,17 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 
 import java.io.File;
 import java.io.StringReader;
@@ -61,23 +60,30 @@ import org.w3c.dom.NodeList;
  */
 public class TemplateDocx {
 
-	private static Logger			log								= LoggerFactory.getLogger(TemplateDocx.class);
+	private static Logger					log								= LoggerFactory.getLogger(TemplateDocx.class);
 
-	protected File					fileTemplate;
-	protected Map<String, String>	mapTagXml;
-	protected Map<String, Boolean>	mapValeurCheckBox				= new HashMap<String, Boolean>();
-	protected List<TableFilling>	listeTableFilling;
+	protected File							fileTemplate;
+	protected WordprocessingMLPackage		wordMLPackage;
+	protected CustomXmlDataStoragePart		customXmlPart;
+	protected List<String>					listeTagName					= new ArrayList<>();
 
-	public static final String		DOCX_CONTENT_TYPE				= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-	public static final String		NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
+	protected Map<String, String>			mapTagXml						= new HashMap<>();
+	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
+	protected List<TableFilling>			listeTableFilling;
+	protected List<TemplateDocxTagResolver>	listeTagResolver				= new ArrayList<>();
+
+	public static final String				DOCX_CONTENT_TYPE				= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	public static final String				NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
+	protected static final String			A_COMPLETER						= "<A COMPLETER>";
 
 	/**
 	 * Constructeur
 	 *
 	 * @param fileTemplate un template .docx
 	 */
-	public TemplateDocx(File fileTemplate) {
+	public TemplateDocx(File fileTemplate) throws Docx4JException {
 		this.fileTemplate = fileTemplate;
+		initDocx();
 	}
 
 	/**
@@ -85,6 +91,10 @@ public class TemplateDocx {
 	 */
 	public File getFileTemplate() {
 		return fileTemplate;
+	}
+
+	public void addTagResolver(TemplateDocxTagResolver tagResolver) {
+		this.listeTagResolver.add(tagResolver);
 	}
 
 	/**
@@ -110,9 +120,6 @@ public class TemplateDocx {
 		if (StringUtils.isBlank(controlContentTag)) {
 			log.warn("setText appelé avec controlContentTag = " + controlContentTag);
 			return;
-		}
-		if (mapTagXml == null) {
-			mapTagXml = new HashMap<String, String>();
 		}
 		mapTagXml.put(controlContentTag, text);
 	}
@@ -160,9 +167,7 @@ public class TemplateDocx {
 	 * @throws Docx4JException en cas d'erreur
 	 */
 	public void createDocx(File targetFile) throws Docx4JException, JAXBException {
-
 		WordprocessingMLPackage wordMLPackage = createDocx();
-
 		// Ecrit dans le fichier cible
 		wordMLPackage.save(targetFile);
 	}
@@ -175,12 +180,16 @@ public class TemplateDocx {
 	 * @throws Docx4JException en cas d'erreur
 	 */
 	public WordprocessingMLPackage createDocx() throws Docx4JException, JAXBException {
+		applyBindings();
+		return wordMLPackage;
+	}
+
+	private void initDocx() throws Docx4JException {
 		// Instancie objet principal de manipulation du .docx
-		WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(fileTemplate);
+		wordMLPackage = WordprocessingMLPackage.load(fileTemplate);
 
 		// Récupére les custom xml parts
 		Map<String, CustomXmlPart> customXmlParts = wordMLPackage.getCustomXmlDataStorageParts();
-		CustomXmlDataStoragePart customXmlPart = null;
 		org.w3c.dom.Document customPartDocument = null;
 		boolean doBinding = customXmlParts.isEmpty();
 		if (doBinding) {
@@ -223,14 +232,13 @@ public class TemplateDocx {
 				dataBinding.setXpath("/root[1]/" + tagName + "[1]");
 			}
 
-			// définition de la valeur du noeud
-			String tagValue = !mapTagXml.containsKey(tagName) ? "<A COMPLETER>"
-					: (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
-			if (tagValue.equals(" ")) {
-				this.removeContentControl(wordMLPackage, tagName);
-			}
-			updateXmlTag(customXmlPart, tagName, tagValue);
+			listeTagName.add(tagName);
 		}
+	}
+
+	private void applyBindings() throws Docx4JException, JAXBException {
+
+		applyBindingsForTags();
 
 		// Coche/décoche chaque case à cocher
 		for (Entry<String, Boolean> valeur : mapValeurCheckBox.entrySet()) {
@@ -259,7 +267,30 @@ public class TemplateDocx {
 				}
 			}
 		}
-		return wordMLPackage;
+	}
+
+	private void applyBindingsForTags() throws Docx4JException {
+		for (final String tagName : listeTagName) {
+
+			// définition de la valeur du noeud
+			String tagValue = null;
+			for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
+				tagValue = tagResolver.resolve(tagName);
+				if (tagValue != null) {
+					break;
+				}
+			}
+
+			if (tagValue == null) {
+				tagValue = !mapTagXml.containsKey(tagName) ? A_COMPLETER
+						: (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+			}
+
+			if (StringUtils.isEmpty(tagValue)) {
+				removeContentControl(wordMLPackage, tagName);
+			}
+			updateXmlTag(customXmlPart, tagName, tagValue);
+		}
 	}
 
 	/**
