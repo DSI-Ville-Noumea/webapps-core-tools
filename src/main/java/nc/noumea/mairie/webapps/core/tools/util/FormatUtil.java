@@ -10,18 +10,17 @@ package nc.noumea.mairie.webapps.core.tools.util;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -29,6 +28,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -39,6 +39,7 @@ public class FormatUtil {
 	private static final NumberFormat	FORMATTER_MONTANT											= construitFormatterXpf("#,##0.##");
 	private static final NumberFormat	FORMATTER_XPF												= construitFormatterXpf("#,##0.## XPF");
 	private static final NumberFormat	FORMATTER_SEPARATEUR_MILLIER_DEUX_CHIFFRES_APRES_VIRGULE	= construitFormatterXpf("###,##0.00");
+	public static final Pattern			PATTERN_L_APOSTROPHE										= Pattern.compile("^[aeyuiohAEYUIOH]$");
 
 	public static String capitalizeFullyFrench(String str) {
 		if (StringUtils.isBlank(str)) {
@@ -188,4 +189,5 @@ public class FormatUtil {
 	public static String getCharForNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 64)) : null;
 	}
+
 }

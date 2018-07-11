@@ -65,7 +65,7 @@ public class TemplateDocx {
 	protected File							fileTemplate;
 	protected WordprocessingMLPackage		wordMLPackage;
 	protected CustomXmlDataStoragePart		customXmlPart;
-	protected List<String>					listeTagName					= new ArrayList<>();
+	protected Map<String, SdtElement>		mapTag							= new HashMap<>();
 
 	protected Map<String, String>			mapTagXml						= new HashMap<>();
 	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
@@ -212,7 +212,11 @@ public class TemplateDocx {
 
 		List<Object> listeCustomField = getAllCustomField(wordMLPackage);
 		for (Object customField : listeCustomField) {
-			String tagName = StringUtils.trim(((SdtElement) customField).getSdtPr().getTag().getVal());
+			Tag tag = ((SdtElement) customField).getSdtPr().getTag();
+			if (tag == null) {
+				continue;
+			}
+			String tagName = StringUtils.trim(tag.getVal());
 			if (StringUtils.isBlank(tagName)) {
 				continue;
 			}
@@ -232,7 +236,7 @@ public class TemplateDocx {
 				dataBinding.setXpath("/root[1]/" + tagName + "[1]");
 			}
 
-			listeTagName.add(tagName);
+			mapTag.put(tagName, (SdtElement) customField);
 		}
 	}
 
@@ -270,14 +274,15 @@ public class TemplateDocx {
 	}
 
 	private void applyBindingsForTags() throws Docx4JException {
-		for (final String tagName : listeTagName) {
+		for (final String tagName : mapTag.keySet()) {
 
 			// définition de la valeur du noeud
 			String tagValue = null;
 			for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
-				tagValue = tagResolver.resolve(tagName);
-				if (tagValue != null) {
-					break;
+				String result = tagResolver.resolve(tagName, mapTag.get(tagName));
+				// Les prochains resolvers de la liste peuvent overrider le résultat
+				if (result != null) {
+					tagValue = result;
 				}
 			}
 

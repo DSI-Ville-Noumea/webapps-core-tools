@@ -2,6 +2,9 @@ package nc.noumea.mairie.webapps.core.tools.docx
 
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
+import org.docx4j.wml.ContentAccessor
+import org.docx4j.wml.SdtElement
+import org.jvnet.jaxb2_commons.ppp.Child
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -33,17 +36,21 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         /**
          * Exemple : "uppercase_rootObjet.sousObjet.propriete"
          */
-        private val EXPRESSION_REGEXP = "([^_]+_)?(.+)".toRegex()
+        private val EXPRESSION_REGEXP = "(.+_)?([^_]+)".toRegex()
     }
 
     private val logger = LoggerFactory.getLogger(AbstractTemplateDocxTagResolver::class.java)
 
-    override fun resolve(tagName: String): String? {
+    override fun resolve(tagName: String, tagElement: SdtElement): String? {
         val path = getPath(tagName)
         val rootObjectName = resolvePathRootObjectName(path)
         val obj = resolvePathRootObject(rootObjectName)
         val value = if (obj != null) ReflectUtil.findObjectFromPath(path.replaceFirst("$rootObjectName.", ""), obj) else resolveSimpleName(path)
-        return processGenericFunction(getFunction(tagName), value)
+
+        val functions = getFunction(tagName).split('_').filter { it.isBlank() }.reversed()
+        var result = value
+        functions.forEach { result = processGenericFunction(it, result, tagElement) }
+        return result as String?
     }
 
     protected open fun resolvePathRootObjectName(path: String): String {
@@ -58,16 +65,41 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return null
     }
 
-    protected open fun processGenericFunction(functionName: String, value: Any?): String? {
+    protected open fun processGenericFunction(functionName: String, value: Any?, tagElement: SdtElement): String? {
         return when (functionName) {
-            "uppercase_" -> value?.toString()?.toUpperCase()
-            "lowercase_" -> value?.toString()?.toLowerCase()
-            "formatDateAvecMoisEnTexte_" -> DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "uppercase" -> value?.toString()?.toUpperCase()
+            "lowercase" -> value?.toString()?.toLowerCase()
+            "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "remplaceParValeurControleContenuSiVrai" -> {
+                if ((value is Boolean && value) || (value is String && value.toBoolean())) {
+                    replaceTagParDefaultContent(tagElement)
+                }
+                return ""
+            }
+            "remplaceParValeurControleContenuSiFaux" -> {
+                if ((value is Boolean && !value) || (value is String && !value.toBoolean())) {
+                    replaceTagParDefaultContent(tagElement)
+                }
+                return ""
+            }
+            "supprimeParagrapheSiBlank" -> {
+                if (value is String && value.isBlank()) {
+                    val paragraph = (tagElement as Child).parent
+                    val parent = (paragraph as Child).parent
+                    (parent as ContentAccessor).content.remove(paragraph)
+                }
+                return value?.toString()
+            }
             else -> {
                 if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
                 return value?.toString()
             }
         }
+    }
+
+    private fun replaceTagParDefaultContent(tagElement: SdtElement) {
+        ((tagElement as Child).parent as ContentAccessor).content.clear()
+        ((tagElement as Child).parent as ContentAccessor).content.addAll(tagElement.sdtContent.content)
     }
 
     private fun getPath(tagName: String): String {
