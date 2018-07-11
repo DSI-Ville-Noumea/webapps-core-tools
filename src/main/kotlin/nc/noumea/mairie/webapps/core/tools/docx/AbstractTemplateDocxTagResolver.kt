@@ -2,7 +2,9 @@ package nc.noumea.mairie.webapps.core.tools.docx
 
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
+import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.SdtElement
+import org.jvnet.jaxb2_commons.ppp.Child
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -45,7 +47,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         val obj = resolvePathRootObject(rootObjectName)
         val value = if (obj != null) ReflectUtil.findObjectFromPath(path.replaceFirst("$rootObjectName.", ""), obj) else resolveSimpleName(path)
 
-        val functions = getFunction(tagName).split('_')
+        val functions = getFunction(tagName).split('_').filter { it.isBlank() }.reversed()
         var result = value
         functions.forEach { result = processGenericFunction(it, result, tagElement) }
         return result as String?
@@ -68,15 +70,36 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
             "uppercase" -> value?.toString()?.toUpperCase()
             "lowercase" -> value?.toString()?.toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
-            "supprimeValeurControleContenuSiVrai" -> {
-                tagElement.sdtPr = null
-                return null
+            "remplaceParValeurControleContenuSiVrai" -> {
+                if ((value is Boolean && value) || (value is String && value.toBoolean())) {
+                    replaceTagParDefaultContent(tagElement)
+                }
+                return ""
+            }
+            "remplaceParValeurControleContenuSiFaux" -> {
+                if ((value is Boolean && !value) || (value is String && !value.toBoolean())) {
+                    replaceTagParDefaultContent(tagElement)
+                }
+                return ""
+            }
+            "supprimeParagrapheSiBlank" -> {
+                if (value is String && value.isBlank()) {
+                    val paragraph = (tagElement as Child).parent
+                    val parent = (paragraph as Child).parent
+                    (parent as ContentAccessor).content.remove(paragraph)
+                }
+                return value?.toString()
             }
             else -> {
                 if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
                 return value?.toString()
             }
         }
+    }
+
+    private fun replaceTagParDefaultContent(tagElement: SdtElement) {
+        ((tagElement as Child).parent as ContentAccessor).content.clear()
+        ((tagElement as Child).parent as ContentAccessor).content.addAll(tagElement.sdtContent.content)
     }
 
     private fun getPath(tagName: String): String {
