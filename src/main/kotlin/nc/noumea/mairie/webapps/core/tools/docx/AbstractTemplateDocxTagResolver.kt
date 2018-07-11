@@ -66,7 +66,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return when (functionName) {
             "uppercase" -> value?.toString()?.toUpperCase()
             "lowercase" -> value?.toString()?.toLowerCase()
-            "formatDateAvecMoisEnTexte" -> DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
             else -> {
                 if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
                 return value?.toString()
