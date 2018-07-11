@@ -22,6 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
+import org.docx4j.wml.SdtElement;
+
 public interface TemplateDocxTagResolver {
-	String resolve(String tagName);
+	String resolve(String tagName, SdtElement tagElement);
 }

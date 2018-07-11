@@ -2,6 +2,7 @@ package nc.noumea.mairie.webapps.core.tools.docx
 
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
+import org.docx4j.wml.SdtElement
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -38,7 +39,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
 
     private val logger = LoggerFactory.getLogger(AbstractTemplateDocxTagResolver::class.java)
 
-    override fun resolve(tagName: String): String? {
+    override fun resolve(tagName: String, tagElement: SdtElement): String? {
         val path = getPath(tagName)
         val rootObjectName = resolvePathRootObjectName(path)
         val obj = resolvePathRootObject(rootObjectName)
@@ -46,7 +47,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
 
         val functions = getFunction(tagName).split('_')
         var result = value
-        functions.forEach { result = processGenericFunction(it, result) }
+        functions.forEach { result = processGenericFunction(it, result, tagElement) }
         return result as String?
     }
 
@@ -62,11 +63,15 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return null
     }
 
-    protected open fun processGenericFunction(functionName: String, value: Any?): String? {
+    protected open fun processGenericFunction(functionName: String, value: Any?, tagElement: SdtElement): String? {
         return when (functionName) {
             "uppercase" -> value?.toString()?.toUpperCase()
             "lowercase" -> value?.toString()?.toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "supprimeValeurControleContenuSiVrai" -> {
+                tagElement.sdtPr = null
+                return null
+            }
             else -> {
                 if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
                 return value?.toString()

@@ -22,15 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import java.io.File;
-import java.io.StringReader;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +44,14 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.StringReader;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
  *
@@ -65,7 +64,7 @@ public class TemplateDocx {
 	protected File							fileTemplate;
 	protected WordprocessingMLPackage		wordMLPackage;
 	protected CustomXmlDataStoragePart		customXmlPart;
-	protected List<String>					listeTagName					= new ArrayList<>();
+	protected Map<String, SdtElement>		mapTag							= new HashMap<>();
 
 	protected Map<String, String>			mapTagXml						= new HashMap<>();
 	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
@@ -236,7 +235,7 @@ public class TemplateDocx {
 				dataBinding.setXpath("/root[1]/" + tagName + "[1]");
 			}
 
-			listeTagName.add(tagName);
+			mapTag.put(tagName, (SdtElement) customField);
 		}
 	}
 
@@ -274,12 +273,12 @@ public class TemplateDocx {
 	}
 
 	private void applyBindingsForTags() throws Docx4JException {
-		for (final String tagName : listeTagName) {
+		for (final String tagName : mapTag.keySet()) {
 
 			// définition de la valeur du noeud
 			String tagValue = null;
 			for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
-				String result = tagResolver.resolve(tagName);
+				String result = tagResolver.resolve(tagName, mapTag.get(tagName));
 				// Les prochains resolvers de la liste peuvent overrider le résultat
 				if (result != null) {
 					tagValue = result;
