@@ -23,6 +23,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  */
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -127,7 +129,9 @@ public class ZkUtil {
 					if (evt.getName().equals("onYes")) {
 						try {
 							genericService.delete(abstractEntity.getId());
-							BindUtils.postGlobalCommand(null, null, "refreshListe" + getSimpleNameOfClass(entityClass), null);
+							Map<String, Object> args = new HashMap<>();
+							args.put("entityClass", abstractEntity.getClass());
+							BindUtils.postGlobalCommand(null, null, "refreshListeGlobal", args);
 						} catch (JpaSystemException e) {
 							Messagebox.show("Vous ne pouvez pas supprimer cet élément car il est utilisé dans l'application", "Suppression refusée",
 									Messagebox.OK, Messagebox.ERROR);
