@@ -25,5 +25,11 @@ package nc.noumea.mairie.webapps.core.tools.docx;
 import org.docx4j.wml.SdtElement;
 
 public interface TemplateDocxTagResolver {
+	/**
+	 * Résolution du nom d'un contrôle de champ dans un template docx
+	 * @param tagName Nom du contrôle de champ
+	 * @param tagElement Element docx4j correspondant au tag
+	 * @return valeur à appliquer au contrôle de champ
+	 */
 	String resolve(String tagName, SdtElement tagElement);
 }

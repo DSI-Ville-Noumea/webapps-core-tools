@@ -39,10 +39,11 @@ enum class TypeArticle private constructor(internal var masculin: String, intern
 
     fun build(nom: String?, feminin: Boolean = false, pluriel: Boolean = false): String {
         var nom = nom
-        nom = if (nom == null || nom.isEmpty()) "-" else nom
-        val premiereLettre = if (StringUtils.isBlank(nom)) "" else nom.substring(0, 1)
+        nom = if (nom.isNullOrBlank()) "-" else nom
+        val premiereLettre = if (StringUtils.isNotBlank(nom)) nom?.substring(0, 1) else ""
         val contracte = FormatUtil.PATTERN_L_APOSTROPHE.matcher(premiereLettre).matches()
         if (pluriel) {
+            // TODO : voir si il existe un lib qui le fait
             return this.pluriel + nom + "s"
         }
         return if (feminin) {

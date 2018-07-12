@@ -286,9 +286,15 @@ public class TemplateDocx {
 				}
 			}
 
+			// Si tag non résulue par le resolver on parcours la map
+			if (tagValue == null && mapTagXml.containsKey(tagName)) {
+				tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+			}
+
+			// Si tag toujours pas résolu, on met une valeur par défaut
 			if (tagValue == null) {
-				tagValue = !mapTagXml.containsKey(tagName) ? A_COMPLETER
-						: (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+				// TODO : Ajouter surlignage
+				tagValue = A_COMPLETER;
 			}
 
 			if (StringUtils.isEmpty(tagValue)) {
