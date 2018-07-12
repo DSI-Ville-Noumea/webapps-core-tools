@@ -68,7 +68,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
     }
 
     /**
-     * Applique une fonction sur la valeur d'un controle de contenu docx
+     * Applique une fonction sur la valeur d'un contrôle de contenu docx
      */
     protected open fun processGenericFunction(functionName: String, value: Any?, tagElement: SdtElement): String? {
         return when (functionName) {
@@ -130,7 +130,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
     }
 
     /**
-     * Supprime le paragrahe contenant le contrôle de contenu
+     * Supprime le paragraphe contenant le contrôle de contenu
      */
     protected fun deleteParagraphe(tagElement: SdtElement) {
         var parent = (tagElement as Child).parent
@@ -143,7 +143,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
     }
 
     /**
-     * Remplace (supprime) le controle de contenu par la valeur par défaut contenue dans celui-ci
+     * Remplace (supprime) le contrôle de contenu par la valeur par défaut contenue dans celui-ci
      */
     protected fun replaceTagParDefaultContent(tagElement: SdtElement) {
         val parentJaxbEltIndex = ((tagElement as Child).parent as ContentAccessor).content.indexOfFirst { it is JAXBElement<*> && it.value == tagElement }
