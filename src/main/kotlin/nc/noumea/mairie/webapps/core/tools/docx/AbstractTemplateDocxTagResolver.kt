@@ -3,10 +3,12 @@ package nc.noumea.mairie.webapps.core.tools.docx
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
 import org.docx4j.wml.ContentAccessor
+import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
 import org.slf4j.LoggerFactory
 import java.util.*
+import javax.xml.bind.JAXBElement
 
 /*-
  * #%L
@@ -36,7 +38,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         /**
          * Exemple : "uppercase_rootObjet.sousObjet.propriete"
          */
-        private val EXPRESSION_REGEXP = "(.+_)?([^_]+)".toRegex()
+        private val TAG_EXPRESSION_REGEXP = "(.+_)?([^_]+)".toRegex()
     }
 
     private val logger = LoggerFactory.getLogger(AbstractTemplateDocxTagResolver::class.java)
@@ -47,10 +49,10 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         val obj = resolvePathRootObject(rootObjectName)
         val value = if (obj != null) ReflectUtil.findObjectFromPath(path.replaceFirst("$rootObjectName.", ""), obj) else resolveSimpleName(path)
 
-        val functions = getFunction(tagName).split('_').filter { it.isBlank() }.reversed()
+        val functions = getFunction(tagName).split('_').filter { it.isNotBlank() }.reversed()
         var result = value
         functions.forEach { result = processGenericFunction(it, result, tagElement) }
-        return result as String?
+        return result?.toString()
     }
 
     protected open fun resolvePathRootObjectName(path: String): String {
@@ -65,28 +67,54 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return null
     }
 
+    /**
+     * Applique une fonction sur la valeur d'un controle de contenu docx
+     */
     protected open fun processGenericFunction(functionName: String, value: Any?, tagElement: SdtElement): String? {
         return when (functionName) {
             "uppercase" -> value?.toString()?.toUpperCase()
             "lowercase" -> value?.toString()?.toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "remplaceSautLigneParVigule" -> if (value == null) null else value.toString().replace("\n", ", ")
             "remplaceParValeurControleContenuSiVrai" -> {
-                if ((value is Boolean && value) || (value is String && value.toBoolean())) {
+                if (equalsToBoolean(value, true)) {
                     replaceTagParDefaultContent(tagElement)
                 }
-                return ""
+                return value?.toString()
             }
             "remplaceParValeurControleContenuSiFaux" -> {
-                if ((value is Boolean && !value) || (value is String && !value.toBoolean())) {
+                if (equalsToBoolean(value, false)) {
                     replaceTagParDefaultContent(tagElement)
                 }
-                return ""
+                return value?.toString()
+            }
+            "videSiVrai" -> {
+                if (equalsToBoolean(value, true)) {
+                    return ""
+                }
+                return value?.toString()
+            }
+            "videSiFaux" -> {
+                if (equalsToBoolean(value, false)) {
+                    return ""
+                }
+                return value?.toString()
+            }
+            "supprimeParagrapheSiVrai" -> {
+                if (equalsToBoolean(value, true)) {
+                    deleteParagraphe(tagElement)
+                }
+                return value?.toString()
+            }
+            "supprimeParagrapheSiFaux" -> {
+                if (equalsToBoolean(value, false)) {
+                    deleteParagraphe(tagElement)
+                }
+                return value?.toString()
             }
             "supprimeParagrapheSiBlank" -> {
-                if (value is String && value.isBlank()) {
-                    val paragraph = (tagElement as Child).parent
-                    val parent = (paragraph as Child).parent
-                    (parent as ContentAccessor).content.remove(paragraph)
+                if (value != null && value.toString().isBlank()) {
+                    deleteParagraphe(tagElement)
                 }
                 return value?.toString()
             }
@@ -97,16 +125,37 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         }
     }
 
-    private fun replaceTagParDefaultContent(tagElement: SdtElement) {
-        ((tagElement as Child).parent as ContentAccessor).content.clear()
-        ((tagElement as Child).parent as ContentAccessor).content.addAll(tagElement.sdtContent.content)
+    protected fun equalsToBoolean(value: Any?, expected: Boolean): Boolean {
+        return (value is Boolean && value == expected) || (value is String && value.toLowerCase() == (if (expected) "true" else "false"))
+    }
+
+    /**
+     * Supprime le paragrahe contenant le contrôle de contenu
+     */
+    protected fun deleteParagraphe(tagElement: SdtElement) {
+        var parent = (tagElement as Child).parent
+        while (parent != null && parent !is P) {
+            parent = (tagElement as Child).parent
+        }
+        if (parent != null) {
+            (((parent as Child).parent) as ContentAccessor).content.remove(parent)
+        }
+    }
+
+    /**
+     * Remplace (supprime) le controle de contenu par la valeur par défaut contenue dans celui-ci
+     */
+    protected fun replaceTagParDefaultContent(tagElement: SdtElement) {
+        val parentJaxbEltIndex = ((tagElement as Child).parent as ContentAccessor).content.indexOfFirst { it is JAXBElement<*> && it.value == tagElement }
+        ((tagElement as Child).parent as ContentAccessor).content.removeAt(parentJaxbEltIndex)
+        ((tagElement as Child).parent as ContentAccessor).content.addAll(parentJaxbEltIndex, tagElement.sdtContent.content)
     }
 
     private fun getPath(tagName: String): String {
-        return tagName.replaceFirst(EXPRESSION_REGEXP, "$2")
+        return tagName.replaceFirst(TAG_EXPRESSION_REGEXP, "$2")
     }
 
     private fun getFunction(tagName: String): String {
-        return tagName.replaceFirst(EXPRESSION_REGEXP, "$1")
+        return tagName.replaceFirst(TAG_EXPRESSION_REGEXP, "$1")
     }
 }

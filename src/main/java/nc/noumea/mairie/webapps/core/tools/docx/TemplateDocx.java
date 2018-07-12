@@ -22,15 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import java.io.File;
-import java.io.StringReader;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.StringReader;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
@@ -286,9 +285,15 @@ public class TemplateDocx {
 				}
 			}
 
+			// Si tag non résulue par le resolver on parcours la map
+			if (tagValue == null && mapTagXml.containsKey(tagName)) {
+				tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+			}
+
+			// Si tag toujours pas résolu, on met une valeur par défaut
 			if (tagValue == null) {
-				tagValue = !mapTagXml.containsKey(tagName) ? A_COMPLETER
-						: (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+				// TODO : Ajouter surlignage
+				tagValue = A_COMPLETER;
 			}
 
 			if (StringUtils.isEmpty(tagValue)) {
