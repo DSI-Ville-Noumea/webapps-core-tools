@@ -23,16 +23,14 @@ package nc.noumea.mairie.webapps.core.tools.util;
  */
 
 
-import java.util.*;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
-
-import org.springframework.util.CollectionUtils;
-
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import java.util.*;
 
 /**
  * Classe utilitaire pour gérer les erreurs sur les entités
@@ -75,7 +73,8 @@ public class MessageErreurUtil {
 		final Set<ConstraintViolation<?>> listeConstraintViolation = MessageErreurUtil.validate(entity);
 		if (listeConstraintViolation != null) {
 			for (final ConstraintViolation<?> violation : listeConstraintViolation) {
-				result.add(new MessageErreur(violation.getMessage()));
+				String propertyPath = violation.getPropertyPath().toString();
+				result.add(new MessageErreur("Le champ '" + propertyPath + "' " + violation.getMessage()));
 			}
 		}
 		return result;
