@@ -11,6 +11,7 @@ abstract class ReflectUtil {
          * Renvoie null si l'objet cible est null ou si un de ses parents est null : meme principe qu'en kotlin : monObjet?.monSousObjet?.monObjetCherche
          */
         fun findObjectFromPath(path: String, root: Any): Any? {
+            if (path.isBlank()) return root
             val objectName = if (path.contains('.')) path.split('.')[0] else path
             var getter = root::class.functions.find { it.name == "get" + objectName[0].toUpperCase() + objectName.substring(1) } as KCallable<*>?
             if (getter == null) {
