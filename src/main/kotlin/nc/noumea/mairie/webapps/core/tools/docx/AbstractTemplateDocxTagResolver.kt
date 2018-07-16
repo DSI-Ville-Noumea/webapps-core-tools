@@ -1,14 +1,14 @@
 package nc.noumea.mairie.webapps.core.tools.docx
 
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException
+import nc.noumea.mairie.webapps.core.tools.type.TypeSeparateur
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
 import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
-import org.slf4j.LoggerFactory
 import java.util.*
-import javax.xml.bind.JAXBElement
 
 /*-
  * #%L
@@ -36,96 +36,161 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
 
     companion object {
         /**
-         * Exemple : "uppercase_rootObjet.sousObjet.propriete"
+         * Expression régulière d'une expression d'un tag de contrôle de contenu
+         * Exemple1 : "rootObjet.sousObjet.propriete"
+         * Exemple2 : "maFonction_rootObjet.sousObjet.propriete"
+         * Exemple3 : "maFonctionOrdre2_maFonctionOrdre1_rootObjet.sousObjet.propriete"
          */
-        private val TAG_EXPRESSION_REGEXP = "(.+_)?([^_]+)".toRegex()
+        private val TAG_REGEXP = "(.+_)?([^_]+)".toRegex()
+        /**
+         * Expression régulière d'une fonction d'une expression
+         * Exemple1 : "maFonction"
+         * Exemple2 : "maFonction--complement"
+         * Exemple3 : "maFonction--complement1-complement2"
+         */
+        private val FUNCTION_REGEXP = "([^-]+)(--(.+))?".toRegex()
     }
-
-    private val logger = LoggerFactory.getLogger(AbstractTemplateDocxTagResolver::class.java)
 
     override fun resolve(tagName: String, tagElement: SdtElement): String? {
-        val path = getPath(tagName)
-        val rootObjectName = resolvePathRootObjectName(path)
-        val obj = resolvePathRootObject(rootObjectName)
-        val value = if (obj != null) ReflectUtil.findObjectFromPath(path.replaceFirst("$rootObjectName.", ""), obj) else resolveSimpleName(path)
-
-        val functions = getFunction(tagName).split('_').filter { it.isNotBlank() }.reversed()
-        var result = value
-        functions.forEach { result = processGenericFunction(it, result, tagElement) }
-        return result?.toString()
+        val expression = getExpression(tagName)
+        val expressionValue = resolveExpression(expression)
+        return if (expressionValue == null) null else applyFunctions(tagName, tagElement, expressionValue)
     }
 
-    protected open fun resolvePathRootObjectName(path: String): String {
-        return path.split('.').first()
+    /**
+     * Résout une expression de type rootObjet.sousObjet.propriete
+     * @return Si la valeur est null c'est que le résolver n'a pas pu déterminer l'expression
+     */
+    protected fun resolveExpression(expression: String): Any? {
+        return resolveExpressionByPathFromRootObject(expression) ?: resolveExpressionByArbitraryRules(expression)
     }
 
-    protected open fun resolvePathRootObject(pathRootName: String): Any? {
-        return null
+    /**
+     * Résout une expression par réflexion sur l'objet root
+     */
+    private fun resolveExpressionByPathFromRootObject(expression: String): Any? {
+        val rootObjectName = resolveExpressionRootObjectName(expression)
+        val rootObject = resolveExpressionRootObject(rootObjectName)
+        return if (rootObject == null) null else ReflectUtil.findObjectFromPath(expression.replaceFirst("$rootObjectName.?".toRegex(), ""), rootObject)
     }
 
-    protected open fun resolveSimpleName(tagName: String): Any? {
+    /**
+     * Résout le nom de l'objet root d'une expression
+     * Exemple1 : rootObjet.sousObjet.propriete --> "rootObjet"
+     * Exemple2 : rootObjetPart1.rootObjetPart2.sousObjet.propriete --> "rootObjetPart1.rootObjetPart2"
+     *
+     * Par défaut, prend le premier segment de l'expression
+     */
+    protected open fun resolveExpressionRootObjectName(expression: String): String {
+        return expression.split('.').first()
+    }
+
+    /**
+     * Retourne l'objet corespondant au nom de l'objet root d'une expression
+     */
+    protected open fun resolveExpressionRootObject(rootObjectName: String): Any? {
         return null
     }
 
     /**
-     * Applique une fonction sur la valeur d'un contrôle de contenu docx
+     * Resout de façon arbitraire une expression
+     * @return Si la valeur est null c'est que le résolver n'a pas pu déterminer l'expression
      */
-    protected open fun processGenericFunction(functionName: String, value: Any?, tagElement: SdtElement): String? {
+    protected open fun resolveExpressionByArbitraryRules(expression: String): Any? {
+        return null
+    }
+
+
+    /**
+     * Applique la ou les fonctions du tag de contrôle de contenu docx sur un objet
+     * Exemple: uppercase, formatDateAvecMoisEnTexte, ...
+     */
+    private fun applyFunctions(tagName: String, tagElement: SdtElement, value: Any): String {
+        val functions = getFunctions(tagName).split('_').filter { it.isNotBlank() }.reversed()
+        var result = value
+        functions.forEach { result = processFunction(it, result, tagElement) }
+        return result.toString()
+    }
+
+
+    /**
+     * Applique une fonction sur un objet
+     *
+     * uppercase_expression --> "VALEUR DE MON EXPRESSION"
+     * lowercase_expression --> "valeur de mon expression"
+     * formatDateAvecMoisEnTexte_expression --> "7 janvier 2014"
+     * remplaceSautLigneParVigule_expression --> "valeur\nde mon \nexpression" --> "valeur,de mon ,expression"
+     * remplaceViguleParSautLigne_expression --> "valeur,de mon ,expression" --> "valeur\nde mon \nexpression"
+     * joinListePar--SAUT-DE-LIGNE_expression --> "[element1,element2,element3]" --> "element1\nelement2\nelement3"
+     * siVrai--expressionBooleene_expression --> Si l'expression est vraie, le contrôle de contenu prend la valeur de l'expression sinon vide
+     * siFaux--expressionBooleene_expression --> Si l'expression est fausse, le contrôle de contenu prend la valeur de l'expression sinon vide
+     * supprimeParagrapheSiVrai_expression --> Si l'expression est vraie, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
+     * supprimeParagrapheSiFaux_expression --> Si l'expression est fausse, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
+     * supprimeParagrapheSiBlank_expression --> Si l'expression est une chaîne blanche, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
+     */
+    protected open fun processFunction(function: String, value: Any, tagElement: SdtElement): Any {
+
+        val functionName = function.replace(FUNCTION_REGEXP, "$1")
+        val complement = function.replace(FUNCTION_REGEXP, "$3")
+
         return when (functionName) {
-            "uppercase" -> value?.toString()?.toUpperCase()
-            "lowercase" -> value?.toString()?.toLowerCase()
-            "formatDateAvecMoisEnTexte" -> if (value == null) null else DateUtil.formatDateAvecMoisEnTexte(value as Date)
-            "remplaceSautLigneParVigule" -> if (value == null) null else value.toString().replace("\n", ", ")
-            "remplaceParValeurControleContenuSiVrai" -> {
-                if (equalsToBoolean(value, true)) {
-                    replaceTagParDefaultContent(tagElement)
-                }
-                return value?.toString()
+            "uppercase" -> value.toString().toUpperCase()
+            "lowercase" -> value.toString().toLowerCase()
+            "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "remplaceSautLigneParVigule" -> value.toString().replace("\n", ", ")
+            "remplaceViguleParSautLigne" -> value.toString().replace(",", "\n")
+            "joinListePar" -> {
+                if (value !is Iterable<*>) return ""
+                return value.map { it.toString() }.joinToString(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur)
             }
-            "remplaceParValeurControleContenuSiFaux" -> {
-                if (equalsToBoolean(value, false)) {
-                    replaceTagParDefaultContent(tagElement)
-                }
-                return value?.toString()
+            "siVrai" -> {
+                val conditionValue = processCondition(function, complement)
+                return if (conditionValue != null && conditionValue) value else ""
             }
-            "videSiVrai" -> {
-                if (equalsToBoolean(value, true)) {
-                    return ""
-                }
-                return value?.toString()
-            }
-            "videSiFaux" -> {
-                if (equalsToBoolean(value, false)) {
-                    return ""
-                }
-                return value?.toString()
+            "siFaux" -> {
+                val conditionValue = processCondition(function, complement)
+                return if (conditionValue != null && !conditionValue) value else ""
             }
             "supprimeParagrapheSiVrai" -> {
                 if (equalsToBoolean(value, true)) {
                     deleteParagraphe(tagElement)
                 }
-                return value?.toString()
+                return ""
             }
             "supprimeParagrapheSiFaux" -> {
                 if (equalsToBoolean(value, false)) {
                     deleteParagraphe(tagElement)
                 }
-                return value?.toString()
+                return ""
             }
             "supprimeParagrapheSiBlank" -> {
-                if (value != null && value.toString().isBlank()) {
+                if (value.toString().isBlank()) {
                     deleteParagraphe(tagElement)
                 }
-                return value?.toString()
+                return value
             }
-            else -> {
-                if (functionName.isNotEmpty()) logger.warn("Impossible de résoudre la fonction $functionName")
-                return value?.toString()
-            }
+            else -> throw TechnicalException("Impossible de résoudre la fonction $functionName")
         }
     }
 
-    protected fun equalsToBoolean(value: Any?, expected: Boolean): Boolean {
+    /**
+     * Evalue la condition d'un fonction
+     */
+    private fun processCondition(function: String, condition: String?): Boolean? {
+        if (condition.isNullOrBlank()) throw TechnicalException("Erreur lors de l'évaluation du tag d'un contrôle de contenu : La fonction $function doit être de la forme $function[condition]")
+        val conditionValue = resolveExpression(condition!!) ?: resolveExpressionByArbitraryRules(condition)
+        return if (conditionValue == null) null else (conditionValue is Boolean && conditionValue) || (conditionValue is String && conditionValue.toLowerCase() == "true")
+    }
+
+    /**
+     * Vérifie que la valeur booléenne d'un objet correspond à la valeur booléenne attendue
+     * Exemples :
+     *      value = true, expected = true --> true
+     *      value = false, expected = true --> false
+     *      value = false, expected = false --> true
+     *      value = "false", expected = false --> true
+     */
+    protected fun equalsToBoolean(value: Any, expected: Boolean): Boolean {
         return (value is Boolean && value == expected) || (value is String && value.toLowerCase() == (if (expected) "true" else "false"))
     }
 
@@ -143,19 +208,16 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
     }
 
     /**
-     * Remplace (supprime) le contrôle de contenu par la valeur par défaut contenue dans celui-ci
+     * Récupère la partie expression d'un tag de contrôle de contenu
      */
-    protected fun replaceTagParDefaultContent(tagElement: SdtElement) {
-        val parentJaxbEltIndex = ((tagElement as Child).parent as ContentAccessor).content.indexOfFirst { it is JAXBElement<*> && it.value == tagElement }
-        ((tagElement as Child).parent as ContentAccessor).content.removeAt(parentJaxbEltIndex)
-        ((tagElement as Child).parent as ContentAccessor).content.addAll(parentJaxbEltIndex, tagElement.sdtContent.content)
+    private fun getExpression(tagName: String): String {
+        return tagName.replaceFirst(TAG_REGEXP, "$2")
     }
 
-    private fun getPath(tagName: String): String {
-        return tagName.replaceFirst(TAG_EXPRESSION_REGEXP, "$2")
-    }
-
-    private fun getFunction(tagName: String): String {
-        return tagName.replaceFirst(TAG_EXPRESSION_REGEXP, "$1")
+    /**
+     * Récupère la partie fonctions d'un tag de contrôle de contenu
+     */
+    private fun getFunctions(tagName: String): String {
+        return tagName.replaceFirst(TAG_REGEXP, "$1")
     }
 }

@@ -65,7 +65,7 @@ public class TemplateDocx {
 	protected File							fileTemplate;
 	protected WordprocessingMLPackage		wordMLPackage;
 	protected CustomXmlDataStoragePart		customXmlPart;
-	protected Map<String, SdtElement>		mapTag							= new HashMap<>();
+	protected Map<String, List<SdtElement>>	mapTag							= new HashMap<>();
 
 	protected Map<String, String>			mapTagXml						= new HashMap<>();
 	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
@@ -236,7 +236,7 @@ public class TemplateDocx {
 				dataBinding.setXpath("/root[1]/" + tagName + "[1]");
 			}
 
-			mapTag.put(tagName, (SdtElement) customField);
+			mapTag.computeIfAbsent(tagName, s -> new ArrayList<>()).add((SdtElement) customField);
 		}
 	}
 
@@ -274,34 +274,40 @@ public class TemplateDocx {
 	}
 
 	private void applyBindingsForTags() throws Docx4JException {
-		for (final String tagName : mapTag.keySet()) {
-
-			// définition de la valeur du noeud
-			String tagValue = null;
-			for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
-				String result = tagResolver.resolve(tagName, mapTag.get(tagName));
-				// Les prochains resolvers de la liste peuvent overrider le résultat
-				if (result != null) {
-					tagValue = result;
-				}
+		for (final Entry<String, List<SdtElement>> tagEntry : mapTag.entrySet()) {
+			for (SdtElement sdtElement : tagEntry.getValue()) {
+				applyBindingsForTag(tagEntry.getKey(), sdtElement);
 			}
-
-			// Si tag non résulue par le resolver on parcours la map
-			if (tagValue == null && mapTagXml.containsKey(tagName)) {
-				tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
-			}
-
-			// Si tag toujours pas résolu, on met une valeur par défaut
-			if (tagValue == null) {
-				// TODO : Ajouter surlignage
-				tagValue = A_COMPLETER;
-			}
-
-			if (StringUtils.isEmpty(tagValue)) {
-				removeContentControl(wordMLPackage, tagName);
-			}
-			updateXmlTag(customXmlPart, tagName, tagValue);
 		}
+	}
+
+	private void applyBindingsForTag(String tagName, SdtElement sdtElement) throws Docx4JException {
+
+		// définition de la valeur du noeud
+		String tagValue = null;
+		for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
+			String result = tagResolver.resolve(tagName, sdtElement);
+			// Les prochains resolvers de la liste peuvent overrider le résultat
+			if (result != null) {
+				tagValue = result;
+			}
+		}
+
+		// Si tag non résulue par le resolver on parcours la map
+		if (tagValue == null && mapTagXml.containsKey(tagName)) {
+			tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
+		}
+
+		// Si tag toujours pas résolu, on met une valeur par défaut
+		if (tagValue == null) {
+			// TODO : Ajouter surlignage
+			tagValue = A_COMPLETER;
+		}
+
+		if (StringUtils.isEmpty(tagValue)) {
+			removeContentControl(wordMLPackage, tagName);
+		}
+		updateXmlTag(customXmlPart, tagName, tagValue);
 	}
 
 	/**

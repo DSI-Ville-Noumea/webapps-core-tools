@@ -26,10 +26,10 @@ import org.docx4j.wml.SdtElement;
 
 public interface TemplateDocxTagResolver {
 	/**
-	 * Résolution du nom d'un contrôle de champ dans un template docx
-	 * @param tagName Nom du contrôle de champ
-	 * @param tagElement Element docx4j correspondant au tag
-	 * @return valeur à appliquer au contrôle de champ
+	 * Résout le nom du tag d'un contrôle de contenu dans un template docx
+	 * @param tagName Nom du tag du contrôle de contenu
+	 * @param tagElement Element docx4j correspondant au contrôle de contenu
+	 * @return valeur à appliquer au contrôle de contenu ou null si le resolver ne gère pas la résolution de ce nom
 	 */
 	String resolve(String tagName, SdtElement tagElement);
 }
