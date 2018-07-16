@@ -8,7 +8,7 @@ import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
-import java.util.*
+import java.util.Date
 
 /*-
  * #%L
@@ -137,8 +137,8 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
             "uppercase" -> value.toString().toUpperCase()
             "lowercase" -> value.toString().toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value as Date)
-            "remplaceSautLigneParVigule" -> value.toString().replace("\n", ", ")
-            "remplaceViguleParSautLigne" -> value.toString().replace(",", "\n")
+            "remplaceSautLigneParVirgule" -> value.toString().replace("\n", ", ")
+            "remplaceVirguleParSautLigne" -> value.toString().replace(",", "\n")
             "joinListePar" -> {
                 if (value !is Iterable<*>) return ""
                 return value.map { it.toString() }.joinToString(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur)
