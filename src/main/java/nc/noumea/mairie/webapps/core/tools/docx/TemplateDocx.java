@@ -23,6 +23,7 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  */
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -62,7 +63,6 @@ public class TemplateDocx {
 
 	private static Logger					log								= LoggerFactory.getLogger(TemplateDocx.class);
 
-	protected File							fileTemplate;
 	protected WordprocessingMLPackage		wordMLPackage;
 	protected CustomXmlDataStoragePart		customXmlPart;
 	protected Map<String, List<SdtElement>>	mapTag							= new HashMap<>();
@@ -72,25 +72,25 @@ public class TemplateDocx {
 	protected List<TableFilling>			listeTableFilling;
 	protected List<TemplateDocxTagResolver>	listeTagResolver				= new ArrayList<>();
 
-	public static final String				DOCX_CONTENT_TYPE				= "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 	public static final String				NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
 	protected static final String			A_COMPLETER						= "<A COMPLETER>";
 
 	/**
 	 * Constructeur
 	 *
-	 * @param fileTemplate un template .docx
+	 * @param template un template .docx
 	 */
-	public TemplateDocx(File fileTemplate) throws Docx4JException {
-		this.fileTemplate = fileTemplate;
-		initDocx();
+	public TemplateDocx(File template) throws Docx4JException {
+		initDocx(template);
 	}
 
 	/**
-	 * @return le nom du fichier qui sert de modèle
+	 * Constructeur
+	 *
+	 * @param template un template .docx
 	 */
-	public File getFileTemplate() {
-		return fileTemplate;
+	public TemplateDocx(InputStream template) throws Docx4JException {
+		initDocx(template);
 	}
 
 	public void addTagResolver(TemplateDocxTagResolver tagResolver) {
@@ -184,10 +184,17 @@ public class TemplateDocx {
 		return wordMLPackage;
 	}
 
-	private void initDocx() throws Docx4JException {
-		// Instancie objet principal de manipulation du .docx
+	private void initDocx(File fileTemplate) throws Docx4JException {
 		wordMLPackage = WordprocessingMLPackage.load(fileTemplate);
+		initDocx(wordMLPackage);
+	}
 
+	private void initDocx(InputStream fileTemplate) throws Docx4JException {
+		wordMLPackage = WordprocessingMLPackage.load(fileTemplate);
+		initDocx(wordMLPackage);
+	}
+
+	private void initDocx(WordprocessingMLPackage wordMLPackage) throws Docx4JException {
 		// Récupére les custom xml parts
 		Map<String, CustomXmlPart> customXmlParts = wordMLPackage.getCustomXmlDataStorageParts();
 		org.w3c.dom.Document customPartDocument = null;
