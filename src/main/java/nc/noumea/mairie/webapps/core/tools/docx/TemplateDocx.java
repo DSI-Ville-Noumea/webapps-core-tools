@@ -22,16 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +44,15 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
  *
@@ -74,15 +73,6 @@ public class TemplateDocx {
 
 	public static final String				NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
 	protected static final String			A_COMPLETER						= "<A COMPLETER>";
-
-	/**
-	 * Constructeur
-	 *
-	 * @param template un template .docx
-	 */
-	public TemplateDocx(File template) throws Docx4JException {
-		initDocx(template);
-	}
 
 	/**
 	 * Constructeur
