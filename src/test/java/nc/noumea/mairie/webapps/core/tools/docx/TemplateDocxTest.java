@@ -52,7 +52,7 @@ public class TemplateDocxTest {
 	@Test
 	public void testCreateDocx() throws IOException, Docx4JException, JAXBException {
 
-		TemplateDocx templateDocx = new TemplateDocx(new File(DOCX_BASE_DIR + "demo-template.docx"));
+		TemplateDocx templateDocx = new TemplateDocx(this.getClass().getResourceAsStream("/demo-template.docx"));
 
 		// Subsitution de texte simple
 		templateDocx.setText("nomDeFamille", "Dupond");
