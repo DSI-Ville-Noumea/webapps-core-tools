@@ -23,7 +23,7 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  */
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.SaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
 import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 
 		notifyUpdateEntity();
 		this.updateOnglet(this.entity);
-		Events.sendEvent(new SaveAbstractEntityEvent(this.entity, view));
+		Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
 	}
 
 	private void showNotificationEntityEnregistre() {

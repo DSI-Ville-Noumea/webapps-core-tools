@@ -29,7 +29,8 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.SaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
 
 /**
  * ViewModel abstrait parent des ViewModel de création (qui permettent de créer une nouvelle entité dans une popup).
@@ -75,8 +76,19 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 		if (AbstractViewModel.showErrorPopup(this.entity)) {
 			return;
 		}
+
+		BeforeSaveAbstractEntityEvent eventBeforeSave = new BeforeSaveAbstractEntityEvent(entity,
+				this.popup.getParent() == null ? this.popup : this.popup.getParent());
+		Events.sendEvent(eventBeforeSave);
+
+		if (eventBeforeSave.isStopSave()) {
+			return;
+		}
+
 		entity = getService().save(entity);
-		Events.sendEvent(new SaveAbstractEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
+
+		Events.sendEvent(new AfterSaveAbstractEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
+
 		postGlobalCommandRefreshListe();
 		closePopup();
 		if (this.openAfterCreate()) {

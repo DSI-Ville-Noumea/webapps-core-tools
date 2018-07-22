@@ -26,22 +26,32 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 
 import lombok.Getter;
+import lombok.Setter;
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 
 /**
- * Evénement généré à l'enregistrement d'une entité
+ * Evénement généré avant l'enregistrement d'une entité
  *
  * @author AgileSoft.NC
  */
-public class SaveAbstractEntityEvent extends Event {
+public class BeforeSaveAbstractEntityEvent extends Event {
 
-	public static final String		ON_SAVE_ENTITY	= "onSaveEntity";
+	public static final String		ON_BEFORE_SAVE_ENTITY	= "onBeforeSaveEntity";
+
+	@Getter
+	@Setter
+	public boolean					stopSave				= false;
+
+	@Getter
+	@Setter
+	public Component				popup;
 
 	@Getter
 	private final AbstractEntity	abstractEntity;
 
-	public SaveAbstractEntityEvent(AbstractEntity abstractEntity, Component target) {
-		super(ON_SAVE_ENTITY, target, abstractEntity);
+	public BeforeSaveAbstractEntityEvent(AbstractEntity abstractEntity, Component target) {
+		super(ON_BEFORE_SAVE_ENTITY, target, abstractEntity);
 		this.abstractEntity = abstractEntity;
+		this.popup = target;
 	}
 }
