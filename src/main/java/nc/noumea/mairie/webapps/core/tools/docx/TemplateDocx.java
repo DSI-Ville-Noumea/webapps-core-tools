@@ -70,7 +70,7 @@ public class TemplateDocx {
 	protected Map<String, String>			mapTagXml						= new HashMap<>();
 	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
 	protected List<TableFilling>			listeTableFilling;
-	protected List<TemplateDocxTagResolver>	listeTagResolver				= new ArrayList<>();
+	protected TemplateDocxTagResolver		tagResolver;
 
 	public static final String				NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
 	protected static final String			A_COMPLETER						= "<A COMPLETER>";
@@ -84,8 +84,8 @@ public class TemplateDocx {
 		initDocx(template);
 	}
 
-	public void addTagResolver(TemplateDocxTagResolver tagResolver) {
-		this.listeTagResolver.add(tagResolver);
+	public void setTagResolver(TemplateDocxTagResolver tagResolver) {
+		this.tagResolver = tagResolver;
 	}
 
 	/**
@@ -283,12 +283,8 @@ public class TemplateDocx {
 
 		// définition de la valeur du noeud
 		String tagValue = null;
-		for (TemplateDocxTagResolver tagResolver : listeTagResolver) {
-			String result = tagResolver.resolve(tagName, sdtElement);
-			// Les prochains resolvers de la liste peuvent overrider le résultat
-			if (result != null) {
-				tagValue = result;
-			}
+		if (tagResolver != null) {
+			tagValue = tagResolver.resolve(tagName, sdtElement);
 		}
 
 		// Si tag non résulue par le resolver on parcours la map

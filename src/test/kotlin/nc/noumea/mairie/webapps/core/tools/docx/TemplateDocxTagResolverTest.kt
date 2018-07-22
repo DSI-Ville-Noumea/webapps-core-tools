@@ -21,26 +21,20 @@
  */
 package nc.noumea.mairie.webapps.core.tools.docx
 
+import nc.noumea.mairie.webapps.core.tools.docx.resolver.AbstractTemplateDocxTagResolver
 import org.docx4j.wml.SdtBlock
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.junit.Test
-import java.util.Calendar
 import kotlin.test.assertEquals
 
 class TemplateDocxTagResolverTest {
 
     class TagResolver : AbstractTemplateDocxTagResolver() {
-        override fun resolveExpressionByArbitraryRules(expression: String): Any? {
+        override fun resolveExpression(expression: String): Any? {
             return when (expression) {
                 "uneChaine" -> "Valeur\n de mon, Expression"
-                "uneDate" -> {
-                    val calendar = Calendar.getInstance()
-                    calendar.set(Calendar.DAY_OF_MONTH, 8)
-                    calendar.set(Calendar.MONTH, 8)
-                    calendar.set(Calendar.YEAR, 2018)
-                    calendar.set(Calendar.HOUR_OF_DAY, 8)
-                    calendar.set(Calendar.MINUTE, 28)
-                    calendar.time
-                }
+                "uneDate" -> DateTime(2018, 9, 8, 8, 28, DateTimeZone.forID("+11")).toDate()
                 "uneListe" -> arrayListOf("element1", "element2", "element3", "element4")
                 "conditionVraie" -> true
                 "conditionFausse" -> "false"
@@ -57,8 +51,8 @@ class TemplateDocxTagResolverTest {
         assertEquals("VALEUR\n DE MON, EXPRESSION", resolver.resolve("uppercase_uneChaine", SdtBlock()))
         assertEquals("valeur\n de mon, expression", resolver.resolve("lowercase_uneChaine", SdtBlock()))
         assertEquals("8 septembre 2018", resolver.resolve("formatDateAvecMoisEnTexte_uneDate", SdtBlock()))
-        assertEquals("Valeur,  de mon, Expression", resolver.resolve("remplaceSautLigneParVirgule_uneChaine", SdtBlock()))
-        assertEquals("Valeur\n de mon\n Expression", resolver.resolve("remplaceVirguleParSautLigne_uneChaine", SdtBlock()))
+        assertEquals("Valeur, de mon, Expression", resolver.resolve("remplaceSautLigneParVirgule_uneChaine", SdtBlock()))
+        assertEquals("Valeur\n de mon\nExpression", resolver.resolve("remplaceVirguleParSautLigne_uneChaine", SdtBlock()))
         assertEquals("element1\nelement2\nelement3\nelement4", resolver.resolve("joinListePar--SAUT-DE-LIGNE_uneListe", SdtBlock()))
         assertEquals("element1, element2, element3, element4", resolver.resolve("joinListePar--VIRGULE_uneListe", SdtBlock()))
         assertEquals("Valeur\n de mon, Expression", resolver.resolve("siVrai--conditionVraie_uneChaine", SdtBlock()))

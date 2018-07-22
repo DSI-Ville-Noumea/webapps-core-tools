@@ -1,9 +1,10 @@
-package nc.noumea.mairie.webapps.core.tools.docx
+package nc.noumea.mairie.webapps.core.tools.docx.resolver
 
+import nc.noumea.mairie.webapps.core.tools.docx.TemplateDocxTagResolver
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException
+import nc.noumea.mairie.webapps.core.tools.type.TypePrefixListe
 import nc.noumea.mairie.webapps.core.tools.type.TypeSeparateur
 import nc.noumea.mairie.webapps.core.tools.util.DateUtil
-import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
 import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
@@ -51,7 +52,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         private val FUNCTION_REGEXP = "([^-]+)(--(.+))?".toRegex()
     }
 
-    override fun resolve(tagName: String, tagElement: SdtElement): String? {
+    override fun resolve(tagName: String, tagElement: SdtElement?): String? {
         val expression = getExpression(tagName)
         val expressionValue = resolveExpression(expression)
         return if (expressionValue == null) null else applyFunctions(tagName, tagElement, expressionValue)
@@ -61,51 +62,14 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
      * Résout une expression de type rootObjet.sousObjet.propriete
      * @return Si la valeur est null c'est que le résolver n'a pas pu déterminer l'expression
      */
-    protected fun resolveExpression(expression: String): Any? {
-        return resolveExpressionByPathFromRootObject(expression) ?: resolveExpressionByArbitraryRules(expression)
-    }
-
-    /**
-     * Résout une expression par réflexion sur l'objet root
-     */
-    private fun resolveExpressionByPathFromRootObject(expression: String): Any? {
-        val rootObjectName = resolveExpressionRootObjectName(expression)
-        val rootObject = resolveExpressionRootObject(rootObjectName)
-        return if (rootObject == null) null else ReflectUtil.findObjectFromPath(expression.replaceFirst("$rootObjectName.?".toRegex(), ""), rootObject)
-    }
-
-    /**
-     * Résout le nom de l'objet root d'une expression
-     * Exemple1 : rootObjet.sousObjet.propriete --> "rootObjet"
-     * Exemple2 : rootObjetPart1.rootObjetPart2.sousObjet.propriete --> "rootObjetPart1.rootObjetPart2"
-     *
-     * Par défaut, prend le premier segment de l'expression
-     */
-    protected open fun resolveExpressionRootObjectName(expression: String): String {
-        return expression.split('.').first()
-    }
-
-    /**
-     * Retourne l'objet corespondant au nom de l'objet root d'une expression
-     */
-    protected open fun resolveExpressionRootObject(rootObjectName: String): Any? {
-        return null
-    }
-
-    /**
-     * Resout de façon arbitraire une expression
-     * @return Si la valeur est null c'est que le résolver n'a pas pu déterminer l'expression
-     */
-    protected open fun resolveExpressionByArbitraryRules(expression: String): Any? {
-        return null
-    }
+    protected abstract fun resolveExpression(expression: String): Any?
 
 
     /**
      * Applique la ou les fonctions du tag de contrôle de contenu docx sur un objet
      * Exemple: uppercase, formatDateAvecMoisEnTexte, ...
      */
-    private fun applyFunctions(tagName: String, tagElement: SdtElement, value: Any): String {
+    private fun applyFunctions(tagName: String, tagElement: SdtElement?, value: Any): String {
         val functions = getFunctions(tagName).split('_').filter { it.isNotBlank() }.reversed()
         var result = value
         functions.forEach { result = processFunction(it, result, tagElement) }
@@ -128,7 +92,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
      * supprimeParagrapheSiFaux_expression --> Si l'expression est fausse, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      * supprimeParagrapheSiBlank_expression --> Si l'expression est une chaîne blanche, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      */
-    protected open fun processFunction(function: String, value: Any, tagElement: SdtElement): Any {
+    protected open fun processFunction(function: String, value: Any, tagElement: SdtElement?): Any {
 
         val functionName = function.replace(FUNCTION_REGEXP, "$1")
         val complement = function.replace(FUNCTION_REGEXP, "$3")
@@ -137,8 +101,20 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
             "uppercase" -> value.toString().toUpperCase()
             "lowercase" -> value.toString().toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value as Date)
-            "remplaceSautLigneParVirgule" -> value.toString().replace("\n", ", ")
-            "remplaceVirguleParSautLigne" -> value.toString().replace(",", "\n")
+            "remplaceSautLigneParVirgule" -> value.toString().replace(" *\n\\s*".toRegex(), ", ")
+            "remplaceVirguleParSautLigne" -> value.toString().replace(",\\s*".toRegex(), "\n")
+            "split" -> {
+                if (value !is String) return ""
+                return value.split(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur).toList()
+            }
+            "prefixElementListePar" -> {
+                if (value !is Iterable<*>) return ""
+                return value.map {
+                    val typePrefix = TypePrefixListe.valueOf(complement.replace("-", "_"))
+                    val prefix = if (typePrefix == TypePrefixListe.NUMERO) typePrefix.prefix.replace("{index}", "${value.indexOf(it) + 1}") else typePrefix.prefix
+                    "$prefix$it"
+                }
+            }
             "joinListePar" -> {
                 if (value !is Iterable<*>) return ""
                 return value.map { it.toString() }.joinToString(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur)
@@ -151,20 +127,24 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
                 val conditionValue = processCondition(function, complement)
                 return if (conditionValue != null && !conditionValue) value else ""
             }
+            "siNotNull" -> {
+                val conditionValue = processCondition(function, complement)
+                return if (conditionValue != null) value else ""
+            }
             "supprimeParagrapheSiVrai" -> {
-                if (equalsToBoolean(value, true)) {
+                if (tagElement != null && equalsToBoolean(value, true)) {
                     deleteParagraphe(tagElement)
                 }
                 return ""
             }
             "supprimeParagrapheSiFaux" -> {
-                if (equalsToBoolean(value, false)) {
+                if (tagElement != null && equalsToBoolean(value, false)) {
                     deleteParagraphe(tagElement)
                 }
                 return ""
             }
             "supprimeParagrapheSiBlank" -> {
-                if (value.toString().isBlank()) {
+                if (tagElement != null && value.toString().isBlank()) {
                     deleteParagraphe(tagElement)
                 }
                 return value
@@ -178,7 +158,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
      */
     private fun processCondition(function: String, condition: String?): Boolean? {
         if (condition.isNullOrBlank()) throw TechnicalException("Erreur lors de l'évaluation du tag d'un contrôle de contenu : La fonction $function doit être de la forme $function[condition]")
-        val conditionValue = resolveExpression(condition!!) ?: resolveExpressionByArbitraryRules(condition)
+        val conditionValue = resolveExpression(condition!!)
         return if (conditionValue == null) null else (conditionValue is Boolean && conditionValue) || (conditionValue is String && conditionValue.toLowerCase() == "true")
     }
 

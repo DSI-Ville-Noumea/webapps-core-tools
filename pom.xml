@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.28</version>
+    <version>1.00.29</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -47,7 +47,7 @@
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <license-maven-plugin.version>1.14</license-maven-plugin.version>
         <javax.mail.version>1.6.1</javax.mail.version>
-        <kotlin.version>1.2.50</kotlin.version>
+        <kotlin.version>1.2.51</kotlin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <junit.platform.version>1.2.0</junit.platform.version>
