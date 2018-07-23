@@ -10,25 +10,27 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
+import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
+import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
+import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
+import nc.noumea.mairie.webapps.core.tools.zk.event.*;
+import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,15 +51,12 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
-import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
-import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
-import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
-import nc.noumea.mairie.webapps.core.tools.zk.event.*;
-import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ViewModel abstrait parent des ViewModel de l'application qui manipulent une entité (création, modification, et même liste où on considére que l'entité est
@@ -169,7 +168,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 		try {
 			ouvrePopupCreation(String.format("~./zul/includes/%s/create%s.zul", entityName.toLowerCase(), entityName));
 		} catch (Exception e) {
-			log.error(String.format("Erreur ouvrePopupCreation, entité = %s", entityName));
+			log.error(String.format("Erreur ouvrePopupCreation, entité = %s", entityName), e);
 		}
 	}
 
