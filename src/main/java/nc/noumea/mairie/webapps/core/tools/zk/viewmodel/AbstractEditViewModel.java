@@ -22,9 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
-import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -33,7 +32,10 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Messagebox;
 
-import javax.persistence.OptimisticLockException;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 
 /**
  * ViewModel abstrait parent des ViewModel de modification (qui permettent de modifier une entité dans un onglet).
@@ -62,6 +64,13 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 	@Command
 	public void update(@ContextParam(ContextType.VIEW) Component view) {
 		if (showErrorPopup(this.entity)) {
+			return;
+		}
+
+		BeforeSaveAbstractEntityEvent eventBeforeSave = new BeforeSaveAbstractEntityEvent(entity, view);
+		Events.sendEvent(eventBeforeSave);
+
+		if (eventBeforeSave.isStopSave()) {
 			return;
 		}
 
