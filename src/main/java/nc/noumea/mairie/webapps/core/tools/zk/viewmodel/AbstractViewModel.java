@@ -22,15 +22,13 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
-import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
-import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
-import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
-import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
-import nc.noumea.mairie.webapps.core.tools.zk.event.*;
-import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +49,15 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
+import nc.noumea.mairie.webapps.core.tools.util.EntityUtil;
+import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
+import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
+import nc.noumea.mairie.webapps.core.tools.zk.event.*;
+import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 
 /**
  * ViewModel abstrait parent des ViewModel de l'application qui manipulent une entité (création, modification, et même liste où on considére que l'entité est
