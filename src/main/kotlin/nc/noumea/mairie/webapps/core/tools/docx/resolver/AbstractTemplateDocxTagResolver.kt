@@ -105,7 +105,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
             "remplaceVirguleParSautLigne" -> value.toString().replace(",\\s*".toRegex(), "\n")
             "split" -> {
                 if (value !is String) return ""
-                return value.split(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur).toList()
+                return value.split(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur.trim()).map { it.trim() }.toList()
             }
             "prefixElementListePar" -> {
                 if (value !is Iterable<*>) return ""
