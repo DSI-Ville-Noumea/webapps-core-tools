@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Messagebox;
 
@@ -76,19 +77,22 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 
 		try {
 			this.entity = getService().save(this.entity);
+			showNotificationEntityEnregistre();
+			notifyUpdateEntity();
+			this.updateOnglet(this.entity);
+			Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
 		} catch (OptimisticLockException e) {
 			showErrorPopup("Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
 			log.warn("Modification concurrente (l'utilisateur a été averti avec un message compréhensible)", e);
 		}
-
-		showNotificationEntityEnregistre();
-
-		notifyUpdateEntity();
-		this.updateOnglet(this.entity);
-		Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
 	}
 
-	private void showNotificationEntityEnregistre() {
+	@Override
+	protected EventQueue defaultPublishOnQueue() {
+		return super.defaultPublishOnQueue();
+	}
+
+	void showNotificationEntityEnregistre() {
 		showNotificationStandard(getMessageNotificationEnregistre());
 	}
 

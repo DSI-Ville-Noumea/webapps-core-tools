@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
@@ -41,6 +42,8 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 
 public class ZkUtil {
+
+	public final static String ZUL_BASE_PATH = "~./zul/includes/";
 
 	private static Logger logger = LoggerFactory.getLogger(ZkUtil.class);
 
@@ -158,6 +161,16 @@ public class ZkUtil {
 
 	public static Object getViewModel(Component view) {
 		return view.getAttribute("$VM$");
+	}
+
+	/**
+	 * Méthode utilitaire pour créer un component ZK
+	 * @param pathZul le chemin relatif
+	 * @param args : la map d'arguments
+	 * @return le composant créé
+	 */
+	public static Component createComponent(String pathZul, Map<String, Object> args) {
+		return Executions.createComponents(ZUL_BASE_PATH + pathZul, null , args);
 	}
 
 }
