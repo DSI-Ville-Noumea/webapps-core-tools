@@ -1,4 +1,4 @@
-package nc.noumea.mairie.webapps.core.tools.zk.event;
+package nc.noumea.mairie.webapps.core.tools.domain
 
 /*-
  * #%L
@@ -10,12 +10,12 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -23,25 +23,9 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  */
 
 
-import org.zkoss.zk.ui.event.Event;
+import java.io.Serializable
 
-import lombok.Getter;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-
-/**
- * Evénement pour demander le rechargement complet d'un onglet d'une liste.
- *
- * @author AgileSoft.NC
- */
-public class RechargeOngletListAbstractEntityEvent extends Event {
-
-	private static final long		serialVersionUID	= 1L;
-
-	@Getter
-	private final AbstractEntity	abstractEntity;
-
-	public RechargeOngletListAbstractEntityEvent(AbstractEntity abstractEntity) {
-		super("rechargeOngletListAbstractEntityEvent", null, abstractEntity);
-		this.abstractEntity = abstractEntity;
-	}
+interface Entity : Serializable {
+    val id: Long?
+    val libelleCourt: String?
 }

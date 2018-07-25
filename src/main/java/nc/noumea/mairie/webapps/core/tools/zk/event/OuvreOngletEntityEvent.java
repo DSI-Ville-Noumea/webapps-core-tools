@@ -22,26 +22,33 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  * #L%
  */
 
-
 import org.zkoss.zk.ui.event.Event;
 
 import lombok.Getter;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 
 /**
- * Evénement pour demander la fermeture d'un onglet concernant une entité particulière.
+ * Evénement pour demander l'ouverture d'un onglet concernant une entité particulière.
  *
  * @author AgileSoft.NC
  */
-public class FermeOngletAbstractEntityEvent extends Event {
+public class OuvreOngletEntityEvent extends Event {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 
 	@Getter
-	private final AbstractEntity	abstractEntity;
+	private final Entity		entity;
 
-	public FermeOngletAbstractEntityEvent(AbstractEntity abstractEntity) {
-		super("fermeOngletAbstractEntity", null, abstractEntity);
-		this.abstractEntity = abstractEntity;
+	@Getter
+	private final String		editViewURI;
+
+	@Getter
+	private final Integer		selectedTabIndex;
+
+	public OuvreOngletEntityEvent(Entity entity, String editViewURI, Integer selectedTabIndex) {
+		super("ouvreOngletEntity", null, entity);
+		this.entity = entity;
+		this.editViewURI = editViewURI;
+		this.selectedTabIndex = selectedTabIndex;
 	}
 }

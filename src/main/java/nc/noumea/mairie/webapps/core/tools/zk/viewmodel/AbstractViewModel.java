@@ -29,15 +29,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.ValidationContext;
@@ -55,6 +57,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
@@ -64,10 +67,6 @@ import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
 import nc.noumea.mairie.webapps.core.tools.zk.event.*;
 import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.validation.ConstraintViolationException;
-
 /**
  * ViewModel abstrait parent des ViewModel de l'application qui manipulent une entité (création, modification, et même liste où on considére que l'entité est
  * celle sélectionnée dans la liste)
@@ -75,7 +74,7 @@ import javax.validation.ConstraintViolationException;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractViewModel<T extends AbstractEntity> extends AbstractPopupViewModel<T> {
+public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupViewModel<T> {
 
 	private static Logger	log	= LoggerFactory.getLogger(AbstractViewModel.class);
 
@@ -133,13 +132,13 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	/**
 	 * Publie un évènement de demande d'ouverture d'une entity dans un nouvel onglet (ou dans un onglet existant si l'entity est déjà ouverte)
 	 *
-	 * @param abstractEntity entité concernée
+	 * @param entity entité concernée
 	 * @param editViewURI la vue si on souhaite surcharger le comportement par défaut
 	 * @param selectedTabIndex index de l'onglet à ouvrir
 	 */
 	@Command
-	public void ouvreOnglet(@BindingParam("entity") AbstractEntity abstractEntity, String editViewURI, Integer selectedTabIndex) {
-		defaultPublishOnQueue().publish(new OuvreOngletAbstractEntityEvent(abstractEntity, editViewURI, selectedTabIndex));
+	public void ouvreOnglet(@BindingParam("entity") Entity entity, String editViewURI, Integer selectedTabIndex) {
+		defaultPublishOnQueue().publish(new OuvreOngletEntityEvent(entity, editViewURI, selectedTabIndex));
 	}
 
 	@Command
@@ -150,10 +149,10 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	/**
 	 * Publie un événement de demande de fermeture d'un onglet qui concerne une entity
 	 *
-	 * @param abstractEntity entité concernée
+	 * @param entity entité concernée
 	 */
-	public void fermeOnglet(@BindingParam("entity") T abstractEntity) {
-		defaultPublishOnQueue().publish(new FermeOngletAbstractEntityEvent(abstractEntity));
+	public void fermeOnglet(@BindingParam("entity") T entity) {
+		defaultPublishOnQueue().publish(new FermeOngletEntityEvent(entity));
 	}
 
 	/**
@@ -169,7 +168,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	 */
 	@Command
 	public void rechargeOngletListe() {
-		defaultPublishOnQueue().publish(new RechargeOngletListAbstractEntityEvent(entity));
+		defaultPublishOnQueue().publish(new RechargeOngletListEntityEvent(entity));
 	}
 
 	@Command
@@ -185,13 +184,13 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	/**
 	 * Publie un événement de demande de recharge de l'entity, dans l'onglet couramment sélectionné (ou dans l'onglet indiqué)
 	 *
-	 * @param abstractEntity l'entité à recharger
+	 * @param entity l'entité à recharger
 	 * @param editViewURI l'url de la page d'édition (si null, comportement par défaut, la page sera trouvée à partir du nom de la classe de l'abstractEntity)
 	 * @param titreOnglet titre de l'onglet (si null, comportement par défaut, le titre sera trouvé à partir du nom de la classe de l'abstractEntity)
 	 * @param selectedTabIndex le sous onglet selectionné
 	 */
-	protected void rechargeOnglet(AbstractEntity abstractEntity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
-		defaultPublishOnQueue().publish(new RechargeOngletAbstractEntityEvent(abstractEntity, editViewURI, titreOnglet, selectedTabIndex));
+	protected void rechargeOnglet(Entity entity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
+		defaultPublishOnQueue().publish(new RechargeOngletEntityEvent(entity, editViewURI, titreOnglet, selectedTabIndex));
 	}
 
 	protected void refreshOngletGeneric(String titreOnglet, String viewUri) {
@@ -206,7 +205,7 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 	 */
 	@Command
 	public void updateOnglet(@BindingParam("entity") T abstractEntity) {
-		defaultPublishOnQueue().publish(new UpdateOngletAbstractEntityEvent(abstractEntity));
+		defaultPublishOnQueue().publish(new UpdateOngletEntityEvent(abstractEntity));
 	}
 
 	public GenericService<T, ?> getService() {
@@ -409,19 +408,19 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 		}
 	}
 
-
 	protected void saveAndThrowExplainedTechnicalExceptionIfProblem() {
 		try {
 			entity = getService().save(entity);
 		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
-			throw new TechnicalException("Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
+			throw new TechnicalException(
+					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
 		} catch (DuplicateKeyException e) {
 			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage());
 		} catch (PersistenceException | DataAccessException e) {
-			throw new TechnicalException("Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés");
+			throw new TechnicalException(
+					"Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés");
 		}
 	}
-
 
 	protected void deleteAndThrowTechnicalExceptionIfProblem() {
 		try {

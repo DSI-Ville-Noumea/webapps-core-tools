@@ -22,26 +22,37 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  * #L%
  */
 
-
 import org.zkoss.zk.ui.event.Event;
 
 import lombok.Getter;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 
 /**
- * Evénement pour demander la mise à jour du libellé d'un onglet concernant une entité particulière.
+ * Evénement pour demander le rechargement complet d'un onglet concernant une entité particulière.
  *
  * @author AgileSoft.NC
  */
-public class UpdateOngletAbstractEntityEvent extends Event {
+public class RechargeOngletEntityEvent extends Event {
 
-	private static final long		serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 1L;
 
 	@Getter
-	private final AbstractEntity	abstractEntity;
+	private final Entity		entity;
 
-	public UpdateOngletAbstractEntityEvent(AbstractEntity abstractEntity) {
-		super("updateOngletAbstractEntity", null, abstractEntity);
-		this.abstractEntity = abstractEntity;
+	@Getter
+	private final String		editViewURI;
+
+	@Getter
+	private final String		titreOnglet;
+
+	@Getter
+	private final Integer		selectedTabIndex;
+
+	public RechargeOngletEntityEvent(Entity entity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
+		super("rechargeOngletEntityEvent", null, entity);
+		this.entity = entity;
+		this.editViewURI = editViewURI;
+		this.titreOnglet = titreOnglet;
+		this.selectedTabIndex = selectedTabIndex;
 	}
 }
