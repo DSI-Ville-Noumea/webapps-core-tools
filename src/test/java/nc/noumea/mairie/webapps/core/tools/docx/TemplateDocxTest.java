@@ -92,7 +92,7 @@ public class TemplateDocxTest {
 		log.info("fichier généré = " + fichierResultat.getAbsolutePath());
 		templateDocx.createDocx(fichierResultat);
 		assertTrue(fichierResultat.exists());
-		assertTrue(fichierResultat.length() > 30000d);
+		assertTrue(fichierResultat.length() > 20000d);
 	}
 
 	@Test

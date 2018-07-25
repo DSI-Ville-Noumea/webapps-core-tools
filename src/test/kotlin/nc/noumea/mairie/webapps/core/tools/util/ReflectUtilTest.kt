@@ -28,7 +28,7 @@ class ReflectUtilTest {
 
     @Test
     fun testFindObjectFromPath() {
-        assertEquals("toto", ReflectUtil.findObjectFromPath("sousObjet1.sousObjet2.propriete", RootObjet()))
+        assertEquals("toto", ReflectUtil.findObjectFromPath("sousObjet1.sousObjet2.propriete1", RootObjet()))
         assertEquals(null, ReflectUtil.findObjectFromPath("sousObjet1Inconnu", RootObjet()))
         assertEquals(null, ReflectUtil.findObjectFromPath("sousObjet1.sousObjet2Inconnu", RootObjet()))
         assertEquals(null, ReflectUtil.findObjectFromPath("sousObjet1.sousObjet2.proprieteInconnue", RootObjet()))
@@ -43,7 +43,8 @@ class ReflectUtilTest {
     }
 
     class SousObjet2 {
-        val propriete = "toto"
+        val propriete1 = "toto"
+        val propriete2 = true
+        val propriete3 = false
     }
-
 }

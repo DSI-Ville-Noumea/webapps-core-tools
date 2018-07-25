@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.32</version>
+    <version>1.00.33</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -31,10 +31,10 @@
         <commons.collections.version>4.1</commons.collections.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.codec.version>1.10</commons.codec.version>
-        <org.docx4j.version>3.3.7</org.docx4j.version>
+        <org.docx4j.version>6.0.0</org.docx4j.version>
+        <docx4j-export-fo.version>6.0.0</docx4j-export-fo.version>
         <slf4j.version>1.7.25</slf4j.version>
         <lombok.version>1.18.0</lombok.version>
-        <docx4j-export-fo.version>3.3.6</docx4j-export-fo.version>
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
         <imgscalr.lib.version>4.2</imgscalr.lib.version>

@@ -22,18 +22,27 @@
 package nc.noumea.mairie.webapps.core.tools.docx
 
 import nc.noumea.mairie.webapps.core.tools.docx.resolver.AbstractTemplateDocxTagResolver
+import nc.noumea.mairie.webapps.core.tools.docx.resolver.expression.AbstractExpressionResolver
+import nc.noumea.mairie.webapps.core.tools.util.ReflectUtilTest
 import org.docx4j.wml.SdtBlock
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.junit.Test
+import java.io.File
 import kotlin.test.assertEquals
 
 class TemplateDocxTagResolverTest {
 
-    class TagResolver : AbstractTemplateDocxTagResolver() {
-        override fun resolveExpression(expression: String): Any? {
+    class ExpressionResolver(val unObjet: Any?) : AbstractExpressionResolver() {
+
+        override fun resolveExpressionRootObject(rootObjectName: String): Any? {
+            return if (rootObjectName == "unObjet") unObjet else null
+        }
+
+        override fun resolveExpressionByArbitraryRules(expression: String): Any? {
             return when (expression) {
                 "uneChaine" -> "Valeur\n de mon, Expression"
+                "uneAutreChaine" -> "Valeurs; séparés; par des; points vigule"
                 "uneDate" -> DateTime(2018, 9, 8, 8, 28, DateTimeZone.forID("+11")).toDate()
                 "uneListe" -> arrayListOf("element1", "element2", "element3", "element4")
                 "conditionVraie" -> true
@@ -43,21 +52,43 @@ class TemplateDocxTagResolverTest {
         }
     }
 
+    class TagResolver(val expressionResolver: ExpressionResolver) : AbstractTemplateDocxTagResolver() {
+        override fun resolveExpression(expression: String): Any? {
+            return expressionResolver.resolveExpressionByPathFromRootObject(expression) ?: expressionResolver.resolveExpressionByArbitraryRules(expression)
+        }
+    }
 
     @Test
     fun testFunctions() {
-        val resolver = TagResolver()
+        val expressionResolver = ExpressionResolver(null)
+        val tagResolver = TagResolver(expressionResolver)
 
-        assertEquals("VALEUR\n DE MON, EXPRESSION", resolver.resolve("uppercase_uneChaine", SdtBlock()))
-        assertEquals("valeur\n de mon, expression", resolver.resolve("lowercase_uneChaine", SdtBlock()))
-        assertEquals("8 septembre 2018", resolver.resolve("formatDateAvecMoisEnTexte_uneDate", SdtBlock()))
-        assertEquals("Valeur, de mon, Expression", resolver.resolve("remplaceSautLigneParVirgule_uneChaine", SdtBlock()))
-        assertEquals("Valeur\n de mon\nExpression", resolver.resolve("remplaceVirguleParSautLigne_uneChaine", SdtBlock()))
-        assertEquals("element1\nelement2\nelement3\nelement4", resolver.resolve("joinListePar--SAUT-DE-LIGNE_uneListe", SdtBlock()))
-        assertEquals("element1, element2, element3, element4", resolver.resolve("joinListePar--VIRGULE_uneListe", SdtBlock()))
-        assertEquals("Valeur\n de mon, Expression", resolver.resolve("siVrai--conditionVraie_uneChaine", SdtBlock()))
-        assertEquals("", resolver.resolve("siVrai--conditionFausse_uneChaine", SdtBlock()))
-        assertEquals("", resolver.resolve("siFaux--conditionVraie_uneChaine", SdtBlock()))
-        assertEquals("Valeur\n de mon, Expression", resolver.resolve("siFaux--conditionFausse_uneChaine", SdtBlock()))
+        assertEquals("VALEUR\n DE MON, EXPRESSION", tagResolver.resolve("uppercase_uneChaine", SdtBlock()))
+        assertEquals("valeur\n de mon, expression", tagResolver.resolve("lowercase_uneChaine", SdtBlock()))
+        assertEquals("8 septembre 2018", tagResolver.resolve("formatDateAvecMoisEnTexte_uneDate", SdtBlock()))
+        assertEquals("Valeur, de mon, Expression", tagResolver.resolve("remplaceSautLigneParVirgule_uneChaine", SdtBlock()))
+        assertEquals("Valeur\n de mon\nExpression", tagResolver.resolve("remplaceVirguleParSautLigne_uneChaine", SdtBlock()))
+        assertEquals("[Valeurs, séparés, par des, points vigule]", tagResolver.resolve("split--POINT-VIRGULE_uneAutreChaine", SdtBlock()))
+        assertEquals("element1\nelement2\nelement3\nelement4", tagResolver.resolve("joinListePar--SAUT-DE-LIGNE_uneListe", SdtBlock()))
+        assertEquals("element1, element2, element3, element4", tagResolver.resolve("joinListePar--VIRGULE_uneListe", SdtBlock()))
+        assertEquals("Valeur\n de mon, Expression", tagResolver.resolve("siVrai--conditionVraie_uneChaine", SdtBlock()))
+        assertEquals("", tagResolver.resolve("siVrai--conditionFausse_uneChaine", SdtBlock()))
+        assertEquals("", tagResolver.resolve("siFaux--conditionVraie_uneChaine", SdtBlock()))
+        assertEquals("Valeur\n de mon, Expression", tagResolver.resolve("siFaux--conditionFausse_uneChaine", SdtBlock()))
+    }
+
+    @Test
+    fun testCreationTemplateAvecTagResolver() {
+
+        val unObjet = ReflectUtilTest.RootObjet()
+        val expressionResolver = ExpressionResolver(unObjet)
+        val tagResolver = TagResolver(expressionResolver)
+
+        val templateDocx = TemplateDocx(this::class.java.getResourceAsStream("/template_with_tag_to_resolve_test.docx"))
+        templateDocx.setTagResolver(tagResolver)
+        val fichierTempDocxGenere = File.createTempFile("doc_with_tag_resolved_test-", ".docx")
+        val wordMLPackage = templateDocx.createDocx()
+        wordMLPackage.save(fichierTempDocxGenere)
+        println(fichierTempDocxGenere)
     }
 }
