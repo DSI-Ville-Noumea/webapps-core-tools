@@ -1,5 +1,5 @@
 [![](https://jitpack.io/v/DSI-Ville-Noumea/webapps-core-tools.svg)](https://jitpack.io/#DSI-Ville-Noumea/webapps-core-tools)
-
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&identifier=136540346)](https://dependabot.com)
 
 # webapps-core-tools
 
