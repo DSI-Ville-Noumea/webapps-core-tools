@@ -32,6 +32,8 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
 import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
 
+import java.util.Iterator;
+
 /**
  * ViewModel abstrait parent des ViewModel de création (qui permettent de créer une nouvelle entité dans une popup).
  *
@@ -57,13 +59,17 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
-		if (view != null) {
-			Window window = (Window) Selectors.iterable(view, "#create" + super.getEntityClass().getSimpleName()).iterator().next();
-			if (window == null) {
-				window = (Window) Selectors.iterable(view, "window").iterator().next();
-			}
-			setPopup(window);
+		if (view == null) {
+			return;
 		}
+		Iterator<Component> iterator = Selectors.iterable(view, "#create" + super.getEntityClass().getSimpleName()).iterator();
+		if (!iterator.hasNext()) {
+			iterator = Selectors.iterable(view, "window").iterator();
+		}
+		if (!iterator.hasNext()) {
+			return; // peut arriver
+		}
+		setPopup((Window) iterator.next());
 	}
 
 	/**
@@ -85,10 +91,8 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 			return;
 		}
 
-		entity = getService().save(entity);
-
+		saveAndThrowExplainedTechnicalExceptionIfProblem();
 		Events.sendEvent(new AfterSaveAbstractEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
-
 		postGlobalCommandRefreshListe();
 		closePopup();
 		if (this.openAfterCreate()) {

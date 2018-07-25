@@ -33,6 +33,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.util.CollectionUtils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.ValidationContext;
@@ -58,6 +63,10 @@ import nc.noumea.mairie.webapps.core.tools.util.MessageErreur;
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil;
 import nc.noumea.mairie.webapps.core.tools.zk.event.*;
 import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
+
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 
 /**
  * ViewModel abstrait parent des ViewModel de l'application qui manipulent une entité (création, modification, et même liste où on considére que l'entité est
@@ -399,4 +408,29 @@ public abstract class AbstractViewModel<T extends AbstractEntity> extends Abstra
 			// On ne fait rien, simplement pour corriger le problème de quatruple clic
 		}
 	}
+
+
+	protected void saveAndThrowExplainedTechnicalExceptionIfProblem() {
+		try {
+			entity = getService().save(entity);
+		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
+			throw new TechnicalException("Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
+		} catch (DuplicateKeyException e) {
+			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage());
+		} catch (PersistenceException | DataAccessException e) {
+			throw new TechnicalException("Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés");
+		}
+	}
+
+
+	protected void deleteAndThrowTechnicalExceptionIfProblem() {
+		try {
+			getService().delete(entity);
+		} catch (ConstraintViolationException e) {
+			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application");
+		} catch (DataAccessException e) {
+			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)");
+		}
+	}
+
 }

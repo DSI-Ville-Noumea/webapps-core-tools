@@ -65,16 +65,11 @@ public abstract class AbstractPopupEditViewModel<T extends AbstractEntity> exten
 			return;
 		}
 
-		try {
-			this.entity = getService().save(this.entity);
-			super.showNotificationEntityEnregistre();
-			notifyUpdateEntity();
-			view.detach();
-			Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
-		} catch (OptimisticLockException e) {
-			showErrorPopup("Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
-			log.warn("Modification concurrente (l'utilisateur a été averti avec un message compréhensible)", e);
-		}
+		saveAndThrowExplainedTechnicalExceptionIfProblem();
+		super.showNotificationEntityEnregistre();
+		notifyUpdateEntity();
+		view.detach();
+		Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
 	}
 
 
