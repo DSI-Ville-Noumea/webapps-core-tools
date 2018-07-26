@@ -64,7 +64,7 @@ public abstract class AbstractPopupEditViewModel<T extends PersistedEntity> exte
 			return;
 		}
 
-		saveAndThrowExplainedTechnicalExceptionIfProblem();
+		getService().save(entity);
 		super.showNotificationEntityEnregistre();
 		notifyUpdateEntity();
 		view.detach();

@@ -72,7 +72,7 @@ public abstract class AbstractEditViewModel<T extends PersistedEntity> extends A
 			return;
 		}
 
-		saveAndThrowExplainedTechnicalExceptionIfProblem();
+		getService().save(entity);
 		showNotificationEntityEnregistre();
 		notifyUpdateEntity();
 		this.updateOnglet(this.entity);
@@ -101,7 +101,7 @@ public abstract class AbstractEditViewModel<T extends PersistedEntity> extends A
 		Messagebox.show("Voulez-vous vraiment supprimer cet élément ?", "Suppression", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
 				Messagebox.QUESTION, evt -> {
 					if (evt.getName().equals("onYes")) {
-						deleteAndThrowTechnicalExceptionIfProblem();
+						getService().delete(entity);
 						fermeOnglet(entity);
 						postGlobalCommandRefreshListe();
 					}
