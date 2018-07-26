@@ -91,7 +91,7 @@ public abstract class AbstractCreateViewModel<T extends PersistedEntity> extends
 			return;
 		}
 
-		saveAndThrowExplainedTechnicalExceptionIfProblem();
+		getService().save(entity);
 		Events.sendEvent(new AfterSavePersistedEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
 		postGlobalCommandRefreshListe();
 		closePopup();

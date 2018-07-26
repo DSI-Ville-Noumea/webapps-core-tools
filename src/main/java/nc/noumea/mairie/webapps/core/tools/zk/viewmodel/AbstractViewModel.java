@@ -386,29 +386,4 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 			}
 		};
 	}
-
-	protected void saveAndThrowExplainedTechnicalExceptionIfProblem() {
-		try {
-			entity = getService().save(entity);
-		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
-			throw new TechnicalException(
-					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)");
-		} catch (DuplicateKeyException e) {
-			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage());
-		} catch (PersistenceException | DataAccessException e) {
-			throw new TechnicalException(
-					"Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés");
-		}
-	}
-
-	protected void deleteAndThrowTechnicalExceptionIfProblem() {
-		try {
-			getService().delete(entity);
-		} catch (ConstraintViolationException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application");
-		} catch (DataAccessException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)");
-		}
-	}
-
 }
