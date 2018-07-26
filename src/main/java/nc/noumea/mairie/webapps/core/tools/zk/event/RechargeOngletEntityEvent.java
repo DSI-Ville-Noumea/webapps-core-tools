@@ -10,48 +10,49 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 
 import lombok.Getter;
-import lombok.Setter;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 
 /**
- * Evénement généré avant l'enregistrement d'une entité
+ * Evénement pour demander le rechargement complet d'un onglet concernant une entité particulière.
  *
  * @author AgileSoft.NC
  */
-public class BeforeSaveAbstractEntityEvent extends Event {
+public class RechargeOngletEntityEvent extends Event {
 
-	public static final String		ON_BEFORE_SAVE_ENTITY	= "onBeforeSaveEntity";
-
-	@Getter
-	@Setter
-	public boolean					stopSave				= false;
+	private static final long	serialVersionUID	= 1L;
 
 	@Getter
-	@Setter
-	public Component				popup;
+	private final Entity		entity;
 
 	@Getter
-	private final AbstractEntity	abstractEntity;
+	private final String		editViewURI;
 
-	public BeforeSaveAbstractEntityEvent(AbstractEntity abstractEntity, Component target) {
-		super(ON_BEFORE_SAVE_ENTITY, target, abstractEntity);
-		this.abstractEntity = abstractEntity;
-		this.popup = target;
+	@Getter
+	private final String		titreOnglet;
+
+	@Getter
+	private final Integer		selectedTabIndex;
+
+	public RechargeOngletEntityEvent(Entity entity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
+		super("rechargeOngletEntityEvent", null, entity);
+		this.entity = entity;
+		this.editViewURI = editViewURI;
+		this.titreOnglet = titreOnglet;
+		this.selectedTabIndex = selectedTabIndex;
 	}
 }

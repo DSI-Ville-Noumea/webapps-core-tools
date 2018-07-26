@@ -22,11 +22,14 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-import org.zkoss.bind.annotation.*;
+import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Window;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 
 /**
  * ViewModel abstrait parent des ViewModel de popup (pour gérer la visibilité de la popup, et la gestion de la fermeture de la popup)
@@ -35,7 +38,7 @@ import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
  * @author AgileSoft.NC
  */
 @Init(superclass = true)
-public abstract class AbstractPopupViewModel<T extends AbstractEntity> {
+public abstract class AbstractPopupViewModel<T extends Entity> {
 
 	Window popup;
 

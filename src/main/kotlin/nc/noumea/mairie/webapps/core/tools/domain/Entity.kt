@@ -1,4 +1,4 @@
-package nc.noumea.mairie.webapps.core.tools.zk.event;
+package nc.noumea.mairie.webapps.core.tools.domain
 
 /*-
  * #%L
@@ -22,26 +22,10 @@ package nc.noumea.mairie.webapps.core.tools.zk.event;
  * #L%
  */
 
-import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.event.Event;
 
-import lombok.Getter;
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import java.io.Serializable
 
-/**
- * Evénement généré à l'enregistrement d'une entité
- *
- * @author AgileSoft.NC
- */
-public class AfterSaveAbstractEntityEvent extends Event {
-
-	public static final String		ON_AFTER_SAVE_ENTITY	= "onAfterSaveEntity";
-
-	@Getter
-	private final AbstractEntity	abstractEntity;
-
-	public AfterSaveAbstractEntityEvent(AbstractEntity abstractEntity, Component target) {
-		super(ON_AFTER_SAVE_ENTITY, target, abstractEntity);
-		this.abstractEntity = abstractEntity;
-	}
+interface Entity : Serializable {
+    val id: Long?
+    val libelleCourt: String?
 }

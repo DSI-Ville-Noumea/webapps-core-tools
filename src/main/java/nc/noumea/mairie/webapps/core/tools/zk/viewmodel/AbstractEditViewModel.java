@@ -24,16 +24,15 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Messagebox;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
-import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSavePersistedEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSavePersistedEntityEvent;
 import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
 
 /**
@@ -42,18 +41,18 @@ import nc.noumea.mairie.webapps.core.tools.zk.util.ZkUtil;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractEditViewModel<T extends AbstractEntity> extends AbstractViewModel<T> {
+public abstract class AbstractEditViewModel<T extends PersistedEntity> extends AbstractViewModel<T> {
 
 	private static Logger log = LoggerFactory.getLogger(AbstractEditViewModel.class);
 
 	/**
 	 * Initilisation du ViewModel : charge l'entité depuis la base de données
 	 *
-	 * @param abstractEntity entité concernée
+	 * @param persistedEntity entité concernée
 	 */
 	@Init
-	public void initSetup(@ExecutionArgParam("entity") T abstractEntity) {
-		this.entity = getService().findOne(abstractEntity.getId());
+	public void initSetup(@ExecutionArgParam("entity") T persistedEntity) {
+		this.entity = getService().findOne(persistedEntity.getId());
 	}
 
 	/**
@@ -66,7 +65,7 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 			return;
 		}
 
-		BeforeSaveAbstractEntityEvent eventBeforeSave = new BeforeSaveAbstractEntityEvent(entity, view);
+		BeforeSavePersistedEntityEvent eventBeforeSave = new BeforeSavePersistedEntityEvent(entity, view);
 		Events.sendEvent(eventBeforeSave);
 
 		if (eventBeforeSave.isStopSave()) {
@@ -77,7 +76,7 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 		showNotificationEntityEnregistre();
 		notifyUpdateEntity();
 		this.updateOnglet(this.entity);
-		Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
+		Events.sendEvent(new AfterSavePersistedEntityEvent(this.entity, view));
 	}
 
 	@Override
@@ -112,13 +111,13 @@ public abstract class AbstractEditViewModel<T extends AbstractEntity> extends Ab
 	/**
 	 * Recharge l'entity depuis la base de données, si l'entity a été mise à jour par ailleurs.
 	 *
-	 * @param abstractEntity entité
+	 * @param persistedEntity entité
 	 */
-	protected void reloadOnEntityUpdate(AbstractEntity abstractEntity) {
-		if (abstractEntity == null) {
+	protected void reloadOnEntityUpdate(PersistedEntity persistedEntity) {
+		if (persistedEntity == null) {
 			return;
 		}
-		if (this.entity.getId().equals(abstractEntity.getId()) && abstractEntity.getVersion() > this.entity.getVersion()) {
+		if (this.entity.getId().equals(persistedEntity.getId()) && persistedEntity.getVersion() > this.entity.getVersion()) {
 			reloadEntity();
 		}
 	}

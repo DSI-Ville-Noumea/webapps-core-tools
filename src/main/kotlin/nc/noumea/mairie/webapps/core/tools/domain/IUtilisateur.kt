@@ -25,6 +25,5 @@ package nc.noumea.mairie.webapps.core.tools.domain
 
 interface IUtilisateur {
     val email: String
-
     val nomComplet: String
 }

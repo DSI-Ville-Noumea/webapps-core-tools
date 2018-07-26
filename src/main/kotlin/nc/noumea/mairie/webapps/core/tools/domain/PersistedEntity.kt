@@ -26,7 +26,6 @@ package nc.noumea.mairie.webapps.core.tools.domain
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil
-import java.io.Serializable
 import javax.persistence.MappedSuperclass
 import javax.persistence.Version
 
@@ -36,14 +35,9 @@ import javax.persistence.Version
  * @author AgileSoft.NC
  */
 @MappedSuperclass
-abstract class AbstractEntity : Serializable {
-
-    abstract val id: Long?
-
+abstract class PersistedEntity : Entity {
     @Version
     open val version: Int = 0
-
-    abstract val libelleCourt: String?
 
     fun getMaxLength(property: String): Int {
         return EntityUtil.getMaxLength(this, property)!!
@@ -66,15 +60,15 @@ abstract class AbstractEntity : Serializable {
         if (this::class != other::class) {
             return false
         }
-        val otherAbstractEntity = other as AbstractEntity?
+        val otherPersistedEntity = other as PersistedEntity?
 
-        if (id == null && otherAbstractEntity!!.id == null) {
+        if (id == null && otherPersistedEntity!!.id == null) {
             return super.equals(other)
         }
 
         // cas où les 2 possédent un id : ils sont considérés égaux si c'est le même id
-        return if (id != null && otherAbstractEntity!!.id != null) {
-            id == otherAbstractEntity.id
+        return if (id != null && otherPersistedEntity!!.id != null) {
+            id == otherPersistedEntity.id
         } else false
 
         // un id est null, l'autre non
@@ -96,7 +90,4 @@ abstract class AbstractEntity : Serializable {
         return MessageErreurUtil.construitListeMessageErreurViolationContrainte(this)
     }
 
-    companion object {
-        private const val serialVersionUID = 1L
-    }
 }

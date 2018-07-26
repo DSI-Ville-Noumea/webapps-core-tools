@@ -22,9 +22,11 @@ package nc.noumea.mairie.webapps.core.tools.service;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
-import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -33,13 +35,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import nc.noumea.mairie.webapps.core.tools.domain.Entity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
+import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
 
 @Transactional
-public abstract class GenericService<T extends AbstractEntity, R extends PagingAndSortingRepository> {
+public abstract class GenericService<T extends Entity, R extends PagingAndSortingRepository> {
 
 	@Autowired
 	private ApplicationContext	applicationContext;

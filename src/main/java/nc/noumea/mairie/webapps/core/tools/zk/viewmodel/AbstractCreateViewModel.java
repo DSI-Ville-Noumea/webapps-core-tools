@@ -22,17 +22,17 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
+import java.util.Iterator;
+
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Window;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
-import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
-
-import java.util.Iterator;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSavePersistedEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSavePersistedEntityEvent;
 
 /**
  * ViewModel abstrait parent des ViewModel de création (qui permettent de créer une nouvelle entité dans une popup).
@@ -40,7 +40,7 @@ import java.util.Iterator;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends AbstractViewModel<T> {
+public abstract class AbstractCreateViewModel<T extends PersistedEntity> extends AbstractViewModel<T> {
 
 	protected boolean openAfterCreate() {
 		return true;
@@ -83,7 +83,7 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 			return;
 		}
 
-		BeforeSaveAbstractEntityEvent eventBeforeSave = new BeforeSaveAbstractEntityEvent(entity,
+		BeforeSavePersistedEntityEvent eventBeforeSave = new BeforeSavePersistedEntityEvent(entity,
 				this.popup.getParent() == null ? this.popup : this.popup.getParent());
 		Events.sendEvent(eventBeforeSave);
 
@@ -92,7 +92,7 @@ public abstract class AbstractCreateViewModel<T extends AbstractEntity> extends 
 		}
 
 		saveAndThrowExplainedTechnicalExceptionIfProblem();
-		Events.sendEvent(new AfterSaveAbstractEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
+		Events.sendEvent(new AfterSavePersistedEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
 		postGlobalCommandRefreshListe();
 		closePopup();
 		if (this.openAfterCreate()) {
