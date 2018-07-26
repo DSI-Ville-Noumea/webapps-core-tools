@@ -36,7 +36,6 @@ import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -48,7 +47,6 @@ import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.validator.AbstractValidator;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.UiException;
 import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.EventQueues;
 import org.zkoss.zk.ui.util.Clients;
@@ -387,25 +385,6 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 			public void validate(ValidationContext ctx) {
 			}
 		};
-	}
-
-	protected void editPopupGeneric(PersistedEntity persistedEntity) throws IllegalAccessException, InstantiationException {
-		if (persistedEntity == null) {
-			return;
-		}
-
-		PersistedEntity persistedEntityPopup = persistedEntity.getClass().newInstance();
-		BeanUtils.copyProperties(persistedEntity, persistedEntityPopup);
-
-		String simpleName = persistedEntity.getClass().getSimpleName();
-		Map<String, Object> args = new HashMap<>();
-		args.put("selected" + simpleName, persistedEntity);
-		args.put("popup" + simpleName, persistedEntityPopup);
-		try {
-			Executions.createComponents("~./zul/includes" + "/" + simpleName.toLowerCase() + "/edit" + simpleName + ".zul", null, args);
-		} catch (UiException e) {
-			// On ne fait rien, simplement pour corriger le problème de quatruple clic
-		}
 	}
 
 	protected void saveAndThrowExplainedTechnicalExceptionIfProblem() {
