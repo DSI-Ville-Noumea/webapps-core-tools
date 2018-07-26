@@ -32,6 +32,7 @@ import org.zkoss.zul.ListModelList;
 import com.google.common.collect.Lists;
 
 import nc.noumea.mairie.webapps.core.tools.domain.Entity;
+import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
 
 /**
  * ViewModel abstrait parent des ViewModel de liste (qui permettent de visualiser dans une grille des entités).
@@ -71,7 +72,7 @@ public abstract class AbstractListeViewModel<T extends Entity> extends AbstractV
 
 	/**
 	 * Rafraîchit globalement la liste, si la classe en argument est la classe entity (ou une sous-classe)
-	 * @param entityClass
+	 * @param entityClass la classe de l'entité
 	 */
 	@GlobalCommand
 	public void refreshListeGlobal(@BindingParam("entityClass") Class entityClass) {
@@ -83,22 +84,23 @@ public abstract class AbstractListeViewModel<T extends Entity> extends AbstractV
 			}
 		} catch (ClassNotFoundException e) {
 			log.error("Classe non trouvée", e);
+			throw new TechnicalException("Classe non trouvée " + entityClass.toString());
 		}
 	}
 
 	/**
 	 * Met àjour l'entity dans la liste (si elle s'y trouve)
 	 *
-	 * @param abstractEntity entité concernée
+	 * @param persistedEntity entité concernée
 	 */
-	protected void updateEntity(T abstractEntity) {
-		if (abstractEntity == null) {
+	protected void updateEntity(T persistedEntity) {
+		if (persistedEntity == null) {
 			return;
 		}
-		int index = listeEntity.indexOf(abstractEntity);
-		boolean removed = listeEntity.remove(abstractEntity);
+		int index = listeEntity.indexOf(persistedEntity);
+		boolean removed = listeEntity.remove(persistedEntity);
 		if (removed) {
-			listeEntity.add(index, abstractEntity);
+			listeEntity.add(index, persistedEntity);
 		}
 	}
 

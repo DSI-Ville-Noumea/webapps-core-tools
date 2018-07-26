@@ -35,7 +35,7 @@ import javax.persistence.Version
  * @author AgileSoft.NC
  */
 @MappedSuperclass
-abstract class AbstractEntity : Entity {
+abstract class PersistedEntity : Entity {
     @Version
     open val version: Int = 0
 
@@ -60,15 +60,15 @@ abstract class AbstractEntity : Entity {
         if (this::class != other::class) {
             return false
         }
-        val otherAbstractEntity = other as AbstractEntity?
+        val otherPersistedEntity = other as PersistedEntity?
 
-        if (id == null && otherAbstractEntity!!.id == null) {
+        if (id == null && otherPersistedEntity!!.id == null) {
             return super.equals(other)
         }
 
         // cas où les 2 possédent un id : ils sont considérés égaux si c'est le même id
-        return if (id != null && otherAbstractEntity!!.id != null) {
-            id == otherAbstractEntity.id
+        return if (id != null && otherPersistedEntity!!.id != null) {
+            id == otherPersistedEntity.id
         } else false
 
         // un id est null, l'autre non

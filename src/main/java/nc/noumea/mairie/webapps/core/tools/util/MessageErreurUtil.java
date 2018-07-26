@@ -22,15 +22,16 @@ package nc.noumea.mairie.webapps.core.tools.util;
  * #L%
  */
 
-
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import org.springframework.util.CollectionUtils;
+import java.util.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
-import java.util.*;
+
+import org.springframework.util.CollectionUtils;
+
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
 
 /**
  * Classe utilitaire pour gérer les erreurs sur les entités
@@ -61,7 +62,7 @@ public class MessageErreurUtil {
 	 * @param entity entité concernée
 	 * @return liste de message d'erreur, liste vide si aucune erreur (jamais null)
 	 */
-	public static List<MessageErreur> construitListeMessageErreurViolationContrainte(final AbstractEntity entity) {
+	public static List<MessageErreur> construitListeMessageErreurViolationContrainte(final PersistedEntity entity) {
 
 		List<MessageErreur> result = new ArrayList<MessageErreur>();
 
@@ -111,12 +112,12 @@ public class MessageErreurUtil {
 	 * @param collectionEntity liste des entités concernées, si null, la méthode retourne une liste vide
 	 * @return une liste (jamais null) de messages d'erreur concernant la liste des entités
 	 */
-	public static List<MessageErreur> construitListeMessageErreurCollection(Collection<? extends AbstractEntity> collectionEntity) {
+	public static List<MessageErreur> construitListeMessageErreurCollection(Collection<? extends PersistedEntity> collectionEntity) {
 		List<MessageErreur> result = new ArrayList<MessageErreur>();
 		if (CollectionUtils.isEmpty(collectionEntity)) {
 			return result; // liste vide
 		}
-		for (AbstractEntity entity : collectionEntity) {
+		for (PersistedEntity entity : collectionEntity) {
 			if (entity == null) {
 				continue;
 			}

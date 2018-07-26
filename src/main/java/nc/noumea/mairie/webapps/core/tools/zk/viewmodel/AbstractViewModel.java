@@ -56,8 +56,8 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
 import nc.noumea.mairie.webapps.core.tools.domain.Entity;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import nc.noumea.mairie.webapps.core.tools.util.ApplicationContextUtil;
@@ -185,8 +185,8 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 	 * Publie un événement de demande de recharge de l'entity, dans l'onglet couramment sélectionné (ou dans l'onglet indiqué)
 	 *
 	 * @param entity l'entité à recharger
-	 * @param editViewURI l'url de la page d'édition (si null, comportement par défaut, la page sera trouvée à partir du nom de la classe de l'abstractEntity)
-	 * @param titreOnglet titre de l'onglet (si null, comportement par défaut, le titre sera trouvé à partir du nom de la classe de l'abstractEntity)
+	 * @param editViewURI l'url de la page d'édition (si null, comportement par défaut, la page sera trouvée à partir du nom de la classe de l'persistedEntity)
+	 * @param titreOnglet titre de l'onglet (si null, comportement par défaut, le titre sera trouvé à partir du nom de la classe de l'persistedEntity)
 	 * @param selectedTabIndex le sous onglet selectionné
 	 */
 	protected void rechargeOnglet(Entity entity, String editViewURI, String titreOnglet, Integer selectedTabIndex) {
@@ -201,11 +201,11 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 	/**
 	 * Publie un événement de demande de mise à jour du libellé de l'onglet qui gére l'entity passée en argument.
 	 *
-	 * @param abstractEntity entité concernée
+	 * @param persistedEntity entité concernée
 	 */
 	@Command
-	public void updateOnglet(@BindingParam("entity") T abstractEntity) {
-		defaultPublishOnQueue().publish(new UpdateOngletEntityEvent(abstractEntity));
+	public void updateOnglet(@BindingParam("entity") T persistedEntity) {
+		defaultPublishOnQueue().publish(new UpdateOngletEntityEvent(persistedEntity));
 	}
 
 	public GenericService<T, ?> getService() {
@@ -267,7 +267,7 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 	 *
 	 * @param entityUpdated entity concernée
 	 */
-	protected void notifyUpdateEntity(AbstractEntity entityUpdated) {
+	protected void notifyUpdateEntity(PersistedEntity entityUpdated) {
 		if (entityUpdated == null) {
 			return;
 		}
@@ -344,7 +344,7 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 	 * @param entity entité concernée
 	 * @return true si des erreurs ont été affichés, false si aucune erreur
 	 */
-	public static boolean showErrorPopup(AbstractEntity entity) {
+	public static boolean showErrorPopup(PersistedEntity entity) {
 		return showErrorPopup(entity.construitListeMessageErreur());
 	}
 
@@ -360,7 +360,7 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 		Clients.showNotification(message, "info", null, "bottom_center", 3000);
 	}
 
-	public Integer getMaxLength(AbstractEntity entity, String property) throws Exception {
+	public Integer getMaxLength(PersistedEntity entity, String property) throws Exception {
 		return EntityUtil.getMaxLength(entity, property);
 	}
 
@@ -389,18 +389,18 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 		};
 	}
 
-	protected void editPopupGeneric(AbstractEntity abstractEntity) throws IllegalAccessException, InstantiationException {
-		if (abstractEntity == null) {
+	protected void editPopupGeneric(PersistedEntity persistedEntity) throws IllegalAccessException, InstantiationException {
+		if (persistedEntity == null) {
 			return;
 		}
 
-		AbstractEntity abstractEntityPopup = abstractEntity.getClass().newInstance();
-		BeanUtils.copyProperties(abstractEntity, abstractEntityPopup);
+		PersistedEntity persistedEntityPopup = persistedEntity.getClass().newInstance();
+		BeanUtils.copyProperties(persistedEntity, persistedEntityPopup);
 
-		String simpleName = abstractEntity.getClass().getSimpleName();
+		String simpleName = persistedEntity.getClass().getSimpleName();
 		Map<String, Object> args = new HashMap<>();
-		args.put("selected" + simpleName, abstractEntity);
-		args.put("popup" + simpleName, abstractEntityPopup);
+		args.put("selected" + simpleName, persistedEntity);
+		args.put("popup" + simpleName, persistedEntityPopup);
 		try {
 			Executions.createComponents("~./zul/includes" + "/" + simpleName.toLowerCase() + "/edit" + simpleName + ".zul", null, args);
 		} catch (UiException e) {

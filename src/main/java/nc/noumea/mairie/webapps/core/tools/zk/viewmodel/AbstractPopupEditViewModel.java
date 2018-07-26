@@ -22,16 +22,15 @@ package nc.noumea.mairie.webapps.core.tools.zk.viewmodel;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
-import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSaveAbstractEntityEvent;
-import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSaveAbstractEntityEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Events;
 
-import javax.persistence.OptimisticLockException;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
+import nc.noumea.mairie.webapps.core.tools.zk.event.AfterSavePersistedEntityEvent;
+import nc.noumea.mairie.webapps.core.tools.zk.event.BeforeSavePersistedEntityEvent;
 
 /**
  * ViewModel abstrait parent des ViewModel de modification (qui permettent de modifier une entité dans un onglet).
@@ -39,13 +38,13 @@ import javax.persistence.OptimisticLockException;
  * @param <T> Type paramétré (représente une classe d'entité en pratique)
  * @author AgileSoft.NC
  */
-public abstract class AbstractPopupEditViewModel<T extends AbstractEntity> extends AbstractEditViewModel<T> {
+public abstract class AbstractPopupEditViewModel<T extends PersistedEntity> extends AbstractEditViewModel<T> {
 
 	private static Logger log = LoggerFactory.getLogger(AbstractPopupEditViewModel.class);
 
 	@Init
-	public void initSetup(@ExecutionArgParam("entity") T abstractEntity) {
-		super.initSetup(abstractEntity);
+	public void initSetup(@ExecutionArgParam("entity") T persistedEntity) {
+		super.initSetup(persistedEntity);
 	}
 
 	/**
@@ -58,7 +57,7 @@ public abstract class AbstractPopupEditViewModel<T extends AbstractEntity> exten
 			return;
 		}
 
-		BeforeSaveAbstractEntityEvent eventBeforeSave = new BeforeSaveAbstractEntityEvent(entity, view);
+		BeforeSavePersistedEntityEvent eventBeforeSave = new BeforeSavePersistedEntityEvent(entity, view);
 		Events.sendEvent(eventBeforeSave);
 
 		if (eventBeforeSave.isStopSave()) {
@@ -69,8 +68,7 @@ public abstract class AbstractPopupEditViewModel<T extends AbstractEntity> exten
 		super.showNotificationEntityEnregistre();
 		notifyUpdateEntity();
 		view.detach();
-		Events.sendEvent(new AfterSaveAbstractEntityEvent(this.entity, view));
+		Events.sendEvent(new AfterSavePersistedEntityEvent(this.entity, view));
 	}
-
 
 }

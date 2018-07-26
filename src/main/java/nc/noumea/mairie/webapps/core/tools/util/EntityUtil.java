@@ -22,7 +22,6 @@ package nc.noumea.mairie.webapps.core.tools.util;
  * #L%
  */
 
-
 import java.lang.reflect.Field;
 import java.util.Collection;
 
@@ -31,7 +30,7 @@ import javax.persistence.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
 
 public class EntityUtil {
 
@@ -45,7 +44,7 @@ public class EntityUtil {
 	 * @return taille max. déclarée
 	 * @throws Exception exception en cas d'erreur
 	 */
-	public static Integer getMaxLength(AbstractEntity entity, String property) throws Exception {
+	public static Integer getMaxLength(PersistedEntity entity, String property) throws Exception {
 		if (entity == null) {
 			return null;
 		}
@@ -61,10 +60,10 @@ public class EntityUtil {
 	 * @throws Exception exception en cas d'erreur
 	 */
 	public static Integer getMaxLengthClassProperty(String entityClassName, String property) throws Exception {
-		return getMaxLengthGeneric((Class<? extends AbstractEntity>) Class.forName(entityClassName), property);
+		return getMaxLengthGeneric((Class<? extends PersistedEntity>) Class.forName(entityClassName), property);
 	}
 
-	private static int getMaxLengthGeneric(Class<? extends AbstractEntity> clazz, String property) throws Exception {
+	private static int getMaxLengthGeneric(Class<? extends PersistedEntity> clazz, String property) throws Exception {
 		Field field = null;
 		try {
 			field = clazz.getDeclaredField(property);

@@ -38,14 +38,14 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
-import nc.noumea.mairie.webapps.core.tools.domain.AbstractEntity;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
 import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 
 public class ZkUtil {
 
-	public final static String ZUL_BASE_PATH = "~./zul/includes/";
+	public final static String	ZUL_BASE_PATH	= "~./zul/includes/";
 
-	private static Logger logger = LoggerFactory.getLogger(ZkUtil.class);
+	private static Logger		logger			= LoggerFactory.getLogger(ZkUtil.class);
 
 	public static String getSimpleClassNameOfObject(Object object) {
 		if (object == null) {
@@ -126,14 +126,14 @@ public class ZkUtil {
 		return null;
 	}
 
-	public static void deleteReferentielElement(GenericService genericService, AbstractEntity abstractEntity, Class entityClass) {
+	public static void deleteReferentielElement(GenericService genericService, PersistedEntity persistedEntity, Class entityClass) {
 		Messagebox.show("Voulez-vous vraiment supprimer cet élément ?", "Suppression", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
 				Messagebox.QUESTION, evt -> {
 					if (evt.getName().equals("onYes")) {
 						try {
-							genericService.delete(abstractEntity.getId());
+							genericService.delete(persistedEntity.getId());
 							Map<String, Object> args = new HashMap<>();
-							args.put("entityClass", abstractEntity.getClass());
+							args.put("entityClass", persistedEntity.getClass());
 							BindUtils.postGlobalCommand(null, null, "refreshListeGlobal", args);
 						} catch (JpaSystemException e) {
 							Messagebox.show("Vous ne pouvez pas supprimer cet élément car il est utilisé dans l'application", "Suppression refusée",
@@ -170,7 +170,7 @@ public class ZkUtil {
 	 * @return le composant créé
 	 */
 	public static Component createComponent(String pathZul, Map<String, Object> args) {
-		return Executions.createComponents(ZUL_BASE_PATH + pathZul, null , args);
+		return Executions.createComponents(ZUL_BASE_PATH + pathZul, null, args);
 	}
 
 }
