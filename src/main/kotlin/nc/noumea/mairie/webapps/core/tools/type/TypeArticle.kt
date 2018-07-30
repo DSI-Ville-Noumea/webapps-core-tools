@@ -38,18 +38,17 @@ enum class TypeArticle private constructor(internal var masculin: String, intern
     ARTICLE_DEFINI_PREPOSITION_A("au ", "à l'", "à la ", "à l'", "aux ");
 
     fun build(nom: String?, feminin: Boolean = false, pluriel: Boolean = false): String {
-        var nom = nom
-        nom = if (nom.isNullOrBlank()) "-" else nom
-        val premiereLettre = if (StringUtils.isNotBlank(nom)) nom?.substring(0, 1) else ""
+        val nomTemp = if (nom.isNullOrBlank()) "-" else nom
+        val premiereLettre = if (StringUtils.isNotBlank(nomTemp)) nomTemp?.substring(0, 1) else ""
         val contracte = FormatUtil.PATTERN_L_APOSTROPHE.matcher(premiereLettre).matches()
         if (pluriel) {
             // TODO : voir si il existe un lib qui le fait
-            return this.pluriel + nom + "s"
+            return this.pluriel + nomTemp + "s"
         }
         return if (feminin) {
-            (if (contracte) this.femininContracte else this.feminin) + nom
+            (if (contracte) this.femininContracte else this.feminin) + nomTemp
         } else {
-            (if (contracte) this.masculinContracte else this.masculin) + nom
+            (if (contracte) this.masculinContracte else this.masculin) + nomTemp
         }
     }
 }

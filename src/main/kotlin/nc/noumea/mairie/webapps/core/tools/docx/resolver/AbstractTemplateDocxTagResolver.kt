@@ -100,7 +100,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return when (functionName) {
             "uppercase" -> value.toString().toUpperCase()
             "lowercase" -> value.toString().toLowerCase()
-            "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value)
             "remplaceSautLigneParVirgule" -> value.toString().replace(" *\n\\s*".toRegex(), ", ")
             "remplaceVirguleParSautLigne" -> value.toString().replace(",\\s*".toRegex(), "\n")
             "split" -> {

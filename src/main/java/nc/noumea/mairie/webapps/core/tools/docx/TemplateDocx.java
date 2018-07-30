@@ -25,6 +25,7 @@ package nc.noumea.mairie.webapps.core.tools.docx;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.Map.Entry;
@@ -437,7 +438,7 @@ public class TemplateDocx {
 		CustomXmlDataStorageImpl customXmlDataStorage = new CustomXmlDataStorageImpl();
 		customXmlDataStorage.setPackage(wordMLPackage);
 		customXmlPart.setData(customXmlDataStorage);
-		customXmlDataStorage.setDocument(new ReaderInputStream(new StringReader("<root/>")));
+		customXmlDataStorage.setDocument(new ReaderInputStream(new StringReader("<root/>"), Charset.defaultCharset()));
 
 		wordMLPackage.getMainDocumentPart().addTargetPart(customXmlPart, RelationshipsPart.AddPartBehaviour.RENAME_IF_NAME_EXISTS);
 		CustomXmlDataStoragePropertiesPart part = new CustomXmlDataStoragePropertiesPart();
