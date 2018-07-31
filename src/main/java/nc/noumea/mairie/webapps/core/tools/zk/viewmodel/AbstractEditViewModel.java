@@ -72,7 +72,7 @@ public abstract class AbstractEditViewModel<T extends PersistedEntity> extends A
 			return;
 		}
 
-		getService().save(entity);
+		entity = getService().save(entity);
 		showNotificationEntityEnregistre();
 		notifyUpdateEntity();
 		this.updateOnglet(this.entity);
