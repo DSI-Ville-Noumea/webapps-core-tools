@@ -22,7 +22,6 @@
 package nc.noumea.mairie.webapps.core.tools.error
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.fail
 import org.junit.Test
 
 class BusinessExceptionTest {
@@ -32,7 +31,6 @@ class BusinessExceptionTest {
         val message = "ouh yeah"
         try {
             throw BusinessException(message)
-            fail("Expected a BusinessException $message")
         } catch (e: BusinessException) {
             assertThat(e.message).isEqualTo(message)
         }
