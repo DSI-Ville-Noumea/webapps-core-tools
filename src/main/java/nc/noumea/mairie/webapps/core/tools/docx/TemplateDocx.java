@@ -25,6 +25,7 @@ package nc.noumea.mairie.webapps.core.tools.docx;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.Map.Entry;
@@ -54,6 +55,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
+
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
  *
@@ -70,7 +73,7 @@ public class TemplateDocx {
 	protected Map<String, String>			mapTagXml						= new HashMap<>();
 	protected Map<String, Boolean>			mapValeurCheckBox				= new HashMap<>();
 	protected List<TableFilling>			listeTableFilling;
-	protected TemplateDocxTagResolver		tagResolver;
+	protected TemplateTagResolver			tagResolver;
 
 	public static final String				NOUVELLE_LIGNE_TABLEAU_IMBRIQUE	= "NOUVELLE_LIGNE_TABLEAU_IMBRIQUE";
 	protected static final String			A_COMPLETER						= "<A COMPLETER>";
@@ -84,7 +87,7 @@ public class TemplateDocx {
 		initDocx(template);
 	}
 
-	public void setTagResolver(TemplateDocxTagResolver tagResolver) {
+	public void setTagResolver(TemplateTagResolver tagResolver) {
 		this.tagResolver = tagResolver;
 	}
 
@@ -437,7 +440,7 @@ public class TemplateDocx {
 		CustomXmlDataStorageImpl customXmlDataStorage = new CustomXmlDataStorageImpl();
 		customXmlDataStorage.setPackage(wordMLPackage);
 		customXmlPart.setData(customXmlDataStorage);
-		customXmlDataStorage.setDocument(new ReaderInputStream(new StringReader("<root/>")));
+		customXmlDataStorage.setDocument(new ReaderInputStream(new StringReader("<root/>"), Charset.defaultCharset()));
 
 		wordMLPackage.getMainDocumentPart().addTargetPart(customXmlPart, RelationshipsPart.AddPartBehaviour.RENAME_IF_NAME_EXISTS);
 		CustomXmlDataStoragePropertiesPart part = new CustomXmlDataStoragePropertiesPart();

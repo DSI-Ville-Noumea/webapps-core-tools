@@ -1,6 +1,5 @@
-package nc.noumea.mairie.webapps.core.tools.docx.resolver
+package nc.noumea.mairie.webapps.core.tools.resolver
 
-import nc.noumea.mairie.webapps.core.tools.docx.TemplateDocxTagResolver
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException
 import nc.noumea.mairie.webapps.core.tools.type.TypePrefixListe
 import nc.noumea.mairie.webapps.core.tools.type.TypeSeparateur
@@ -33,7 +32,7 @@ import java.util.Date
  * #L%
  */
 
-abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
+abstract class AbstractTemplateTagResolver : TemplateTagResolver {
 
     companion object {
         /**
@@ -50,9 +49,10 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
          * Exemple3 : "maFonction--complement1-complement2"
          */
         private val FUNCTION_REGEXP = "([^-]+)(--(.+))?".toRegex()
+
     }
 
-    override fun resolve(tagName: String, tagElement: SdtElement?): String? {
+    override fun resolve(tagName: String, tagElement: Any?): String? {
         val expression = getExpression(tagName)
         val expressionValue = resolveExpression(expression)
         return if (expressionValue == null) null else applyFunctions(tagName, tagElement, expressionValue)
@@ -69,7 +69,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
      * Applique la ou les fonctions du tag de contrôle de contenu docx sur un objet
      * Exemple: uppercase, formatDateAvecMoisEnTexte, ...
      */
-    private fun applyFunctions(tagName: String, tagElement: SdtElement?, value: Any): String {
+    private fun applyFunctions(tagName: String, tagElement: Any?, value: Any): String {
         val functions = getFunctions(tagName).split('_').filter { it.isNotBlank() }.reversed()
         var result = value
         functions.forEach { result = processFunction(it, result, tagElement) }
@@ -92,7 +92,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
      * supprimeParagrapheSiFaux_expression --> Si l'expression est fausse, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      * supprimeParagrapheSiBlank_expression --> Si l'expression est une chaîne blanche, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      */
-    protected open fun processFunction(function: String, value: Any, tagElement: SdtElement?): Any {
+    protected open fun processFunction(function: String, value: Any, tagElement: Any?): Any {
 
         val functionName = function.replace(FUNCTION_REGEXP, "$1")
         val complement = function.replace(FUNCTION_REGEXP, "$3")
@@ -100,7 +100,7 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
         return when (functionName) {
             "uppercase" -> value.toString().toUpperCase()
             "lowercase" -> value.toString().toLowerCase()
-            "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value as Date)
+            "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value)
             "remplaceSautLigneParVirgule" -> value.toString().replace(" *\n\\s*".toRegex(), ", ")
             "remplaceVirguleParSautLigne" -> value.toString().replace(",\\s*".toRegex(), "\n")
             "split" -> {
@@ -177,7 +177,8 @@ abstract class AbstractTemplateDocxTagResolver : TemplateDocxTagResolver {
     /**
      * Supprime le paragraphe contenant le contrôle de contenu
      */
-    protected fun deleteParagraphe(tagElement: SdtElement) {
+    protected fun deleteParagraphe(tagElement: Any) {
+        if (tagElement !is SdtElement) return
         var parent = (tagElement as Child).parent
         while (parent != null && parent !is P) {
             parent = (tagElement as Child).parent

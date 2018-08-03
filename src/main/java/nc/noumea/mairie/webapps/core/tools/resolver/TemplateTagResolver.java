@@ -1,4 +1,4 @@
-package nc.noumea.mairie.webapps.core.tools.docx;
+package nc.noumea.mairie.webapps.core.tools.resolver;
 
 /*-
  * #%L
@@ -22,14 +22,12 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import org.docx4j.wml.SdtElement;
-
-public interface TemplateDocxTagResolver {
+public interface TemplateTagResolver {
 	/**
-	 * Résout le nom du tag d'un contrôle de contenu dans un template docx
+	 * Résout le nom du tag d'un contrôle de contenu dans un template
 	 * @param tagName Nom du tag du contrôle de contenu
-	 * @param tagElement Element docx4j correspondant au contrôle de contenu
+	 * @param tagElement Element correspondant au contrôle de contenu (Controle de contenu docx, tag xml, ...)
 	 * @return valeur à appliquer au contrôle de contenu ou null si le resolver ne gère pas la résolution de ce nom
 	 */
-	String resolve(String tagName, SdtElement tagElement);
+	String resolve(String tagName, Object tagElement);
 }

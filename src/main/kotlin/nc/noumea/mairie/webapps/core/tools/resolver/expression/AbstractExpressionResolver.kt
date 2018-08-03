@@ -1,4 +1,4 @@
-package nc.noumea.mairie.webapps.core.tools.docx.resolver.expression
+package nc.noumea.mairie.webapps.core.tools.resolver.expression
 
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtil
 
