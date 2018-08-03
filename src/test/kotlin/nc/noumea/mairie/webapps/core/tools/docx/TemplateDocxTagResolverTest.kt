@@ -21,8 +21,8 @@
  */
 package nc.noumea.mairie.webapps.core.tools.docx
 
-import nc.noumea.mairie.webapps.core.tools.docx.resolver.AbstractTemplateDocxTagResolver
-import nc.noumea.mairie.webapps.core.tools.docx.resolver.expression.AbstractExpressionResolver
+import nc.noumea.mairie.webapps.core.tools.resolver.AbstractTemplateTagResolver
+import nc.noumea.mairie.webapps.core.tools.resolver.expression.AbstractExpressionResolver
 import nc.noumea.mairie.webapps.core.tools.util.ReflectUtilTest
 import org.docx4j.wml.SdtBlock
 import org.joda.time.DateTime
@@ -52,7 +52,7 @@ class TemplateDocxTagResolverTest {
         }
     }
 
-    class TagResolver(val expressionResolver: ExpressionResolver) : AbstractTemplateDocxTagResolver() {
+    class TagResolver(val expressionResolver: ExpressionResolver) : AbstractTemplateTagResolver() {
         override fun resolveExpression(expression: String): Any? {
             return expressionResolver.resolveExpressionByPathFromRootObject(expression) ?: expressionResolver.resolveExpressionByArbitraryRules(expression)
         }
