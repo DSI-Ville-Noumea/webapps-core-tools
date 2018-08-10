@@ -22,8 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.util;
  * #L%
  */
 
-
 import java.util.Date;
+import java.util.Locale;
 
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
@@ -165,6 +165,21 @@ public class DateUtil {
 		}
 		DateTime dateTime = new DateTime(date);
 		return dateTime.getDayOfMonth() + " " + libelleMois(dateTime.getMonthOfYear()) + " " + dateTime.getYear();
+	}
+
+	/**
+	 * Retoure une représentation de la date
+	 *
+	 * @param date date concernée
+	 * @return exemple : "Lundi 7 janvier 2014", "" si la date en entrée est null
+	 */
+	public static String formatDateAvecJourMoisEnTexte(Date date) {
+		if (date == null) {
+			return "";
+		}
+		DateTime dateTime = new DateTime(date);
+		return FormatUtil.capitalizeFullyFrench(dateTime.dayOfWeek().getAsText(Locale.FRANCE)) + " " + dateTime.getDayOfMonth() + " "
+				+ libelleMois(dateTime.getMonthOfYear()) + " " + dateTime.getYear();
 	}
 
 	/**
