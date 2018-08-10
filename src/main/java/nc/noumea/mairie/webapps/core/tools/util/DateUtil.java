@@ -178,7 +178,7 @@ public class DateUtil {
 			return "";
 		}
 		DateTime dateTime = new DateTime(date);
-		return FormatUtil.capitalizeFullyFrench(dateTime.dayOfWeek().getAsText(Locale.FRANCE)) + " " + dateTime.getDayOfMonth() + " "
+		return dateTime.dayOfWeek().getAsText(Locale.FRANCE) + " " + dateTime.getDayOfMonth() + " "
 				+ libelleMois(dateTime.getMonthOfYear()) + " " + dateTime.getYear();
 	}
 

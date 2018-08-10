@@ -234,9 +234,9 @@ public class DateUtilTest {
 	@Test
 	public void formatDateAvecJourMoisEnTexte() {
 		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(null), "");
-		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("28/02/2018")), "Mercredi 28 février 2018");
-		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("01/01/2018")), "Lundi 1 janvier 2018");
-		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("31/12/2018")), "Lundi 31 décembre 2018");
+		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("28/02/2018")), "mercredi 28 février 2018");
+		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("01/01/2018")), "lundi 1 janvier 2018");
+		Assert.assertEquals(DateUtil.formatDateAvecJourMoisEnTexte(DateUtil.parseDate("31/12/2018")), "lundi 31 décembre 2018");
 	}
 
 	@Test
