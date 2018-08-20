@@ -35,6 +35,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 
 @Transactional
-public abstract class GenericService<T extends Entity, R extends PagingAndSortingRepository> {
+public abstract class GenericService<T extends Entity, R extends JpaRepository> {
 
 	@Autowired
 	private ApplicationContext	applicationContext;
@@ -72,19 +73,20 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public <S extends T> S save(S var1) {
+
+    public <S extends T> S save(S var1) {
+        String messageGeneric = "Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés";
 		try {
-            return (S) getRepository().save(var1);
+			return (S) getRepository().saveAndFlush(var1);
 		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
 			throw new TechnicalException(
 					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)",
 					e);
 		} catch (DuplicateKeyException e) {
 			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage(), e);
-		} catch (PersistenceException | DataAccessException e) {
-			throw new TechnicalException(
-					"Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés", e);
-		}
+		} catch (Exception e ) {
+            throw new TechnicalException(messageGeneric, e);
+        }
 	}
 
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
@@ -119,28 +121,30 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 		return getRepository().count();
 	}
 
-	public void delete(Long var1) {
+	public void delete(Long entite) {
 		try {
-			getRepository().deleteById(var1);
+			getRepository().deleteById(entite);
+			getRepository().flush();
 		} catch (ConstraintViolationException e) {
 			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (DataAccessException e) {
+		} catch (Exception e) {
 			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
 		}
 	}
 
-	public void delete(T var1) {
+	public void delete(T entite) {
 		try {
-			getRepository().delete(var1);
+			getRepository().delete(entite);
+			getRepository().flush();
 		} catch (ConstraintViolationException e) {
 			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (DataAccessException e) {
+		} catch (Exception e) {
 			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
 		}
 	}
 
-	public void deleteAll(Iterable<? extends T> var1) {
-		getRepository().deleteAll(var1);
+	public void deleteAll(Iterable<? extends T> collectionEntite) {
+		getRepository().deleteAll(collectionEntite);
 	}
 
 	public void deleteAll() {

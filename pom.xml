@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.38</version>
+    <version>1.00.39</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -227,6 +227,11 @@
             <version>${h2.version}</version>
             <scope>test</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.hibernate</groupId>-->
+            <!--<artifactId>hibernate-core</artifactId>-->
+            <!--<version>5.2.12.Final</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
