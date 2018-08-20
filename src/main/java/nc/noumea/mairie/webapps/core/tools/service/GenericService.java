@@ -75,18 +75,7 @@ public abstract class GenericService<T extends Entity, R extends JpaRepository> 
 
 
     public <S extends T> S save(S var1) {
-        String messageGeneric = "Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés";
-		try {
-			return (S) getRepository().saveAndFlush(var1);
-		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
-			throw new TechnicalException(
-					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)",
-					e);
-		} catch (DuplicateKeyException e) {
-			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage(), e);
-		} catch (Exception e ) {
-            throw new TechnicalException(messageGeneric, e);
-        }
+        return (S) getRepository().saveAndFlush(var1);
 	}
 
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
@@ -122,25 +111,11 @@ public abstract class GenericService<T extends Entity, R extends JpaRepository> 
 	}
 
 	public void delete(Long entite) {
-		try {
-			getRepository().deleteById(entite);
-			getRepository().flush();
-		} catch (ConstraintViolationException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (Exception e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
-		}
+        getRepository().deleteById(entite);
 	}
 
 	public void delete(T entite) {
-		try {
-			getRepository().delete(entite);
-			getRepository().flush();
-		} catch (ConstraintViolationException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (Exception e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
-		}
+        getRepository().delete(entite);
 	}
 
 	public void deleteAll(Iterable<? extends T> collectionEntite) {
