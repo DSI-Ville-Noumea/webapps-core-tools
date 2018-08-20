@@ -48,7 +48,7 @@ import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 
 @Transactional
-public abstract class GenericService<T extends Entity, R extends JpaRepository> {
+public abstract class GenericService<T extends Entity, R extends PagingAndSortingRepository> {
 
 	@Autowired
 	private ApplicationContext	applicationContext;
@@ -75,7 +75,7 @@ public abstract class GenericService<T extends Entity, R extends JpaRepository> 
 
 
     public <S extends T> S save(S var1) {
-        return (S) getRepository().saveAndFlush(var1);
+        return (S) getRepository().save(var1);
 	}
 
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
