@@ -35,6 +35,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,19 +73,9 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-	public <S extends T> S save(S var1) {
-		try {
-            return (S) getRepository().save(var1);
-		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
-			throw new TechnicalException(
-					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez recharger et resaisir vos modifications)",
-					e);
-		} catch (DuplicateKeyException e) {
-			throw new TechnicalException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage(), e);
-		} catch (PersistenceException | DataAccessException e) {
-			throw new TechnicalException(
-					"Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés", e);
-		}
+
+    public <S extends T> S save(S var1) {
+        return (S) getRepository().save(var1);
 	}
 
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
@@ -119,28 +110,16 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 		return getRepository().count();
 	}
 
-	public void delete(Long var1) {
-		try {
-			getRepository().deleteById(var1);
-		} catch (ConstraintViolationException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (DataAccessException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
-		}
+	public void delete(Long entite) {
+        getRepository().deleteById(entite);
 	}
 
-	public void delete(T var1) {
-		try {
-			getRepository().delete(var1);
-		} catch (ConstraintViolationException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément car il est utilisé par ailleurs dans l'application", e);
-		} catch (DataAccessException e) {
-			throw new TechnicalException("Vous ne pouvez pas supprimer cet élément (il est probablement utilisé par ailleurs dans l'application)", e);
-		}
+	public void delete(T entite) {
+        getRepository().delete(entite);
 	}
 
-	public void deleteAll(Iterable<? extends T> var1) {
-		getRepository().deleteAll(var1);
+	public void deleteAll(Iterable<? extends T> collectionEntite) {
+		getRepository().deleteAll(collectionEntite);
 	}
 
 	public void deleteAll() {
