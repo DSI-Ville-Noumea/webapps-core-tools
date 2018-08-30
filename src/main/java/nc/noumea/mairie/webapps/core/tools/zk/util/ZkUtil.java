@@ -98,10 +98,9 @@ public class ZkUtil {
 		if (StringUtils.endsWith(component.getId(), "-do-not-disable")) {
 			return false;
 		}
-		if (componentClassName.equals("org.zkoss.zul.Tab") || componentClassName.equals("org.zkoss.zul.Tabbox")) {
+		if (componentClassName.equals("org.zkoss.zul.Tab") || componentClassName.equals("org.zkoss.zul.Tabbox") || componentClassName.equals("org.zkoss.zul.Listheader")) {
 			return false;
 		}
-
 		return true;
 	}
 

@@ -70,7 +70,7 @@ public class MessageErreurUtil {
 			return result;
 		}
 
-		// On ajoute ensuite les contraintes de violoation (typiquement les champs qui ne peuvent être null)
+		// On ajoute ensuite les contraintes de violation (typiquement les champs qui ne peuvent être null)
 		final Set<ConstraintViolation<?>> listeConstraintViolation = MessageErreurUtil.validate(entity);
 		if (listeConstraintViolation != null) {
 			for (final ConstraintViolation<?> violation : listeConstraintViolation) {
