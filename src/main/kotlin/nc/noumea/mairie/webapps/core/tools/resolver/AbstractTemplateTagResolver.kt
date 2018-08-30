@@ -8,7 +8,7 @@ import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
-import java.util.Date
+import java.util.*
 
 /*-
  * #%L
@@ -48,7 +48,7 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
          * Exemple2 : "maFonction--complement"
          * Exemple3 : "maFonction--complement1-complement2"
          */
-        private val FUNCTION_REGEXP = "([^-]+)(--(.+))?".toRegex()
+        val FUNCTION_REGEXP = "([^-]+)(--(.+))?".toRegex()
 
     }
 
