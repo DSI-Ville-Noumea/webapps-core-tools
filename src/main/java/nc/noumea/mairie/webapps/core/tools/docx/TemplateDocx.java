@@ -22,17 +22,7 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-
+import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +45,16 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
@@ -203,8 +202,10 @@ public class TemplateDocx {
 			for (CustomXmlPart part : customXmlParts.values()) {
 				org.w3c.dom.Document doc = ((CustomXmlDataStoragePart) part).getData().getDocument();
 				if (doc != null && "root".equals(doc.getDocumentElement().getTagName())) {
+					// suppression des anciens noeuds
+					((CustomXmlDataStoragePart) part).getData().setDocument(new ReaderInputStream(new StringReader("<root/>"), Charset.defaultCharset()));
 					// le document contient déjà un xml part ayant le tag root pour racine
-					customPartDocument = doc;
+					customPartDocument = ((CustomXmlDataStoragePart) part).getData().getDocument();
 					customXmlPart = (CustomXmlDataStoragePart) part;
 					break;
 				}
@@ -222,20 +223,24 @@ public class TemplateDocx {
 				continue;
 			}
 
-			if (doBinding) {
-				// Création du noeud correspondant dans le custom part s'il nexiste pas
-				NodeList customPartXmlEltList = customPartDocument.getElementsByTagName(tagName);
-				if (customPartXmlEltList.getLength() == 0) {
-					Element customPartXmlElt = customPartDocument.createElement(tagName);
-					customPartDocument.getDocumentElement().appendChild(customPartXmlElt);
+			// Création du noeud correspondant dans le custom part s'il nexiste pas
+			boolean nodeNotFound = true;
+			for (int i = 0; i < customPartDocument.getChildNodes().getLength(); i++) {
+				if (customPartDocument.getChildNodes().item(i).getNodeName().equals(tagName)) {
+					nodeNotFound = false;
+					break;
 				}
-
-				// liaison entre le custom field du document et le noeud de la custom part
-				CTDataBinding dataBinding = new ObjectFactory().createCTDataBinding();
-				((SdtElement) customField).getSdtPr().setDataBinding(dataBinding);
-				dataBinding.setStoreItemID(customXmlPart.getItemId());
-				dataBinding.setXpath("/root[1]/" + tagName + "[1]");
 			}
+			if (nodeNotFound) {
+				Element customPartXmlElt = customPartDocument.createElement(tagName);
+				customPartDocument.getDocumentElement().appendChild(customPartXmlElt);
+			}
+
+			// liaison entre le custom field du document et le noeud de la custom part
+			CTDataBinding dataBinding = new ObjectFactory().createCTDataBinding();
+			dataBinding.setStoreItemID(customXmlPart.getItemId());
+			dataBinding.setXpath("/root[1]/" + tagName + "[1]");
+			((SdtElement) customField).getSdtPr().setDataBinding(dataBinding);
 
 			mapTag.computeIfAbsent(tagName, s -> new ArrayList<>()).add((SdtElement) customField);
 		}
@@ -298,13 +303,15 @@ public class TemplateDocx {
 		// Si tag toujours pas résolu, on met une valeur par défaut
 		if (tagValue == null) {
 			// TODO : Ajouter surlignage
-			tagValue = A_COMPLETER;
+			tagValue = tagName.startsWith("videSiNull_") ? "" : (tagName.startsWith("defautSiNull_") ? null : A_COMPLETER);
 		}
 
-		if (StringUtils.isEmpty(tagValue)) {
-			removeContentControl(wordMLPackage, tagName);
+		if (tagValue != null) {
+			if (StringUtils.isEmpty(tagValue)) {
+				removeContentControl(wordMLPackage, tagName);
+			}
+			updateXmlTag(customXmlPart, tagName, tagValue);
 		}
-		updateXmlTag(customXmlPart, tagName, tagValue);
 	}
 
 	/**
@@ -664,5 +671,55 @@ public class TemplateDocx {
 		} catch (Exception e) {
 			log.warn("anomalie dans updateCheckBox (peut arriver si la checkbox n'existe pas)");
 		}
+	}
+
+	public List<String> getAllCustomFieldNames() {
+		return getAllCustomField(wordMLPackage).stream() //
+				.map(o -> ((SdtElement) o).getSdtPr()) //
+				.map(o -> {
+					SdtPr.Alias alias = (SdtPr.Alias) o.getByClass(SdtPr.Alias.class);
+					String label = alias != null ? alias.getVal() : "**** alias null ****";
+					String tag = o.getTag() != null ? o.getTag().getVal() : "**** tag null ****";
+					return tag + " (label: " + label + ")";
+				}) //
+				.collect(Collectors.toList());
+	}
+
+	public List<String> replaceCustomFieldName(String oldName, String newName, boolean endsWith) {
+		List<String> result = new ArrayList<>();
+		getAllCustomField(wordMLPackage).stream() //
+				.map(o -> ((SdtElement) o).getSdtPr()) //
+				.filter(o -> o.getTag() != null && (endsWith ? o.getTag().getVal().endsWith(oldName) : o.getTag().getVal().equals(oldName))) //
+				.forEach(o -> {
+					String oldTagName = o.getTag().getVal();
+					o.getTag().setVal(oldTagName.replace(oldName, newName));
+					((SdtPr.Alias) o.getByClass(SdtPr.Alias.class)).setVal(o.getTag().getVal());
+					if (o.getDataBinding() != null) {
+						wordMLPackage.getCustomXmlDataStorageParts().values().stream().forEach(part -> {
+							replaceBindingName(part, oldTagName, o.getTag().getVal());
+						});
+						o.getDataBinding().setXpath("/root[1]/" + o.getTag().getVal() + "[1]");
+					}
+					result.add(oldTagName + " --> " + o.getTag().getVal());
+				});
+		return result;
+	}
+
+	private void replaceBindingName(CustomXmlPart part, String oldTagName, String newTagName) {
+		try {
+			org.w3c.dom.Document document = ((CustomXmlDataStoragePart) part).getData().getDocument();
+			NodeList customPartXmlEltList = ((CustomXmlDataStoragePart) part).getData().getDocument().getDocumentElement().getChildNodes();
+			for (int i = 0; i < customPartXmlEltList.getLength(); i++) {
+				if (customPartXmlEltList.item(i).getNodeName().equals(oldTagName)) {
+					document.renameNode(customPartXmlEltList.item(i), null, newTagName);
+				}
+			}
+		} catch (Docx4JException e) {
+			log.error("Erreur lors de la mise à jour du binding du contrôle de contenu " + oldTagName);
+		}
+	}
+
+	public void saveToFile(File file) throws Docx4JException {
+		wordMLPackage.save(file);
 	}
 }
