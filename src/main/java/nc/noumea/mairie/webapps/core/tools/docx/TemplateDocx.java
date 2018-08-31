@@ -303,13 +303,15 @@ public class TemplateDocx {
 		// Si tag toujours pas résolu, on met une valeur par défaut
 		if (tagValue == null) {
 			// TODO : Ajouter surlignage
-			tagValue = tagName.startsWith("videSiNull_") ? "" : A_COMPLETER;
+			tagValue = tagName.startsWith("videSiNull_") ? "" : (tagName.startsWith("defautSiNull_") ? null : A_COMPLETER);
 		}
 
-		if (StringUtils.isEmpty(tagValue)) {
-			removeContentControl(wordMLPackage, tagName);
+		if (tagValue != null) {
+			if (StringUtils.isEmpty(tagValue)) {
+				removeContentControl(wordMLPackage, tagName);
+			}
+			updateXmlTag(customXmlPart, tagName, tagValue);
 		}
-		updateXmlTag(customXmlPart, tagName, tagValue);
 	}
 
 	/**
