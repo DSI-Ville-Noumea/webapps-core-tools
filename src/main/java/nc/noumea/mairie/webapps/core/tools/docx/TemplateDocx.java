@@ -190,8 +190,14 @@ public class TemplateDocx {
 	private void initDocx(WordprocessingMLPackage wordMLPackage) throws Docx4JException {
 		// Récupére les custom xml parts
 		Map<String, CustomXmlPart> customXmlParts = wordMLPackage.getCustomXmlDataStorageParts();
+		Map<String, CustomXmlPart> filteredCustomXmlParts = new HashMap<>();
+		customXmlParts.forEach((s, customXmlPart1) -> {
+			if (customXmlPart1 instanceof CustomXmlDataStoragePart)
+				filteredCustomXmlParts.put(s, customXmlPart1);
+		});
+
 		org.w3c.dom.Document customPartDocument = null;
-		boolean doBinding = customXmlParts.isEmpty();
+		boolean doBinding = filteredCustomXmlParts.isEmpty();
 		if (doBinding) {
 			// la creation de la custum part a tendance à corrompre le fichier si le document contient déjà un xml custom part. A voir pourquoi.
 			// @see CustomXmlDataStoragePart.remove()
@@ -199,7 +205,7 @@ public class TemplateDocx {
 			customXmlParts.put(customXmlPart.getItemId(), customXmlPart);
 			customPartDocument = customXmlPart.getData().getDocument();
 		} else {
-			for (CustomXmlPart part : customXmlParts.values()) {
+			for (CustomXmlPart part : filteredCustomXmlParts.values()) {
 				org.w3c.dom.Document doc = ((CustomXmlDataStoragePart) part).getData().getDocument();
 				if (doc != null && "root".equals(doc.getDocumentElement().getTagName())) {
 					// suppression des anciens noeuds
