@@ -22,7 +22,18 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -46,16 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
 
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
