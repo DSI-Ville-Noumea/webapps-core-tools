@@ -25,7 +25,7 @@
         <!--dependencies versions-->
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <spring.ldap.version>2.3.1.RELEASE</spring.ldap.version>
-        <spring.data.jpa.version>2.0.9.RELEASE</spring.data.jpa.version>
+        <spring.data.jpa.version>2.0.10.RELEASE</spring.data.jpa.version>
         <joda-time.version>2.10</joda-time.version>
         <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
         <commons.collections.version>4.2</commons.collections.version>
