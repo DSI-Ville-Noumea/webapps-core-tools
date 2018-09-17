@@ -22,8 +22,10 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +38,8 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 
 public class ZkUtil {
 
@@ -84,7 +85,7 @@ public class ZkUtil {
 				m.invoke(component, false);
 			}
 		} catch (Exception e) {
-			logger.error("component = " + component, ", classe du component = " + component.getClass().getName(), e);
+			// Pas de log pour pas polluer
 		}
 	}
 

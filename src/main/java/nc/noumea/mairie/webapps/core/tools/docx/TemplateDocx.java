@@ -30,6 +30,7 @@ import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
 import org.docx4j.customXmlProperties.DatastoreItem;
 import org.docx4j.finders.ClassFinder;
+import org.docx4j.jaxb.Context;
 import org.docx4j.model.datastorage.BindingHandler;
 import org.docx4j.model.datastorage.CustomXmlDataStorageImpl;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -301,15 +302,18 @@ public class TemplateDocx {
 			tagValue = tagResolver.resolve(tagName, sdtElement);
 		}
 
-		// Si tag non résulue par le resolver on parcours la map
+		// Si tag non résolu par le resolver on parcours la map
 		if (tagValue == null && mapTagXml.containsKey(tagName)) {
 			tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
 		}
 
 		// Si tag toujours pas résolu, on met une valeur par défaut
 		if (tagValue == null) {
-			// TODO : Ajouter surlignage
-			tagValue = tagName.startsWith("videSiNull_") ? "" : (tagName.startsWith("defautSiNull_") ? null : A_COMPLETER);
+			if (tagName.startsWith("videSiNull_")) {
+				tagValue = "";
+			} else {
+				replaceTagByACompleterHighlight(sdtElement);
+			}
 		}
 
 		if (tagValue != null) {
@@ -317,6 +321,33 @@ public class TemplateDocx {
 				removeContentControl(wordMLPackage, tagName);
 			}
 			updateXmlTag(customXmlPart, tagName, tagValue);
+		}
+	}
+
+	private void replaceTagByACompleterHighlight(SdtElement sdtElement) {
+		ObjectFactory factory = Context.getWmlObjectFactory();
+
+		Highlight highlight = factory.createHighlight();
+		highlight.setVal("yellow");
+
+		R r = factory.createR();
+
+		RPr rpr = factory.createRPr();
+		rpr.setHighlight(highlight);
+		r.getContent().add(rpr);
+
+		Text text = factory.createText();
+		text.setValue(A_COMPLETER);
+		r.getContent().add(text);
+
+		ContentAccessor parent = (ContentAccessor) sdtElement.getParent();
+		for (int i = 0; i < parent.getContent().size(); i++) {
+			Object child = parent.getContent().get(i);
+			if (child == sdtElement || child instanceof JAXBElement && ((JAXBElement) child).getValue() == sdtElement) {
+				parent.getContent().remove(i);
+				parent.getContent().add(i, r);
+				break;
+			}
 		}
 	}
 

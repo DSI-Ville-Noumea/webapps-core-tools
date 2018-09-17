@@ -76,18 +76,18 @@ fun main(vararg args: String) {
 }
 
 private fun listTag(fileTemplate: File) {
+    println("Liste des contrôles de contenu du document $fileTemplate :")
     val template = TemplateDocx(FileInputStream(fileTemplate))
-    println("""Liste des contrôles de contenu du document $fileTemplate :
-------------------------
+    println("""------------------------
 ${template.allCustomFieldNames.joinToString("\n")}
 ------------------------""")
 }
 
 private fun renameTag(fileTemplate: File, oldTagName: String, newTagName: String, endsWith: Boolean) {
+    println("Liste des contrôles de contenu renommés du document $fileTemplate :")
     val template = TemplateDocx(FileInputStream(fileTemplate))
     val result = template.replaceCustomFieldName(oldTagName, newTagName, endsWith)
-    println("""Liste des contrôles de contenu renommés du document $fileTemplate :
-------------------------
+    println("""------------------------
 ${result.joinToString("\n")}
 ------------------------""")
     template.saveToFile(fileTemplate)
