@@ -22,7 +22,18 @@ package nc.noumea.mairie.webapps.core.tools.docx;
  * #L%
  */
 
-import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.security.InvalidParameterException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +41,7 @@ import org.docx4j.TraversalUtil;
 import org.docx4j.XmlUtils;
 import org.docx4j.customXmlProperties.DatastoreItem;
 import org.docx4j.finders.ClassFinder;
+import org.docx4j.jaxb.Context;
 import org.docx4j.model.datastorage.BindingHandler;
 import org.docx4j.model.datastorage.CustomXmlDataStorageImpl;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -45,16 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import nc.noumea.mairie.webapps.core.tools.resolver.TemplateTagResolver;
 
 /**
  * Classe qui modélise un template avec les données utiles pour générer un fichier .docx
@@ -301,15 +304,18 @@ public class TemplateDocx {
 			tagValue = tagResolver.resolve(tagName, sdtElement);
 		}
 
-		// Si tag non résulue par le resolver on parcours la map
+		// Si tag non résolu par le resolver on parcours la map
 		if (tagValue == null && mapTagXml.containsKey(tagName)) {
 			tagValue = (StringUtils.isBlank(mapTagXml.get(tagName)) ? " " : StringUtils.trimToEmpty(mapTagXml.get(tagName)));
 		}
 
 		// Si tag toujours pas résolu, on met une valeur par défaut
 		if (tagValue == null) {
-			// TODO : Ajouter surlignage
-			tagValue = tagName.startsWith("videSiNull_") ? "" : (tagName.startsWith("defautSiNull_") ? null : A_COMPLETER);
+			if (tagName.startsWith("videSiNull_")) {
+				tagValue = "";
+			} else {
+				replaceTagByACompleterHighlight(sdtElement);
+			}
 		}
 
 		if (tagValue != null) {
@@ -317,6 +323,33 @@ public class TemplateDocx {
 				removeContentControl(wordMLPackage, tagName);
 			}
 			updateXmlTag(customXmlPart, tagName, tagValue);
+		}
+	}
+
+	private void replaceTagByACompleterHighlight(SdtElement sdtElement) {
+		ObjectFactory factory = Context.getWmlObjectFactory();
+
+		Highlight highlight = factory.createHighlight();
+		highlight.setVal("yellow");
+
+		R r = factory.createR();
+
+		RPr rpr = factory.createRPr();
+		rpr.setHighlight(highlight);
+		r.getContent().add(rpr);
+
+		Text text = factory.createText();
+		text.setValue(A_COMPLETER);
+		r.getContent().add(text);
+
+		ContentAccessor parent = (ContentAccessor) sdtElement.getParent();
+		for (int i = 0; i < parent.getContent().size(); i++) {
+			Object child = parent.getContent().get(i);
+			if (child == sdtElement || child instanceof JAXBElement && ((JAXBElement) child).getValue() == sdtElement) {
+				parent.getContent().remove(i);
+				parent.getContent().add(i, r);
+				break;
+			}
 		}
 	}
 

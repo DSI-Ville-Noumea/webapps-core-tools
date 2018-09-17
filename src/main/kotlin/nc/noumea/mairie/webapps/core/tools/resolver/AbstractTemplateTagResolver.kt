@@ -9,6 +9,7 @@ import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
 import java.util.*
+import javax.xml.bind.JAXBElement
 
 /*-
  * #%L
@@ -69,11 +70,11 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
      * Applique la ou les fonctions du tag de contrôle de contenu docx sur un objet
      * Exemple: uppercase, formatDateAvecMoisEnTexte, ...
      */
-    private fun applyFunctions(tagName: String, tagElement: Any?, value: Any): String {
+    private fun applyFunctions(tagName: String, tagElement: Any?, value: Any): String? {
         val functions = getFunctions(tagName).split('_').filter { it.isNotBlank() }.reversed()
-        var result = value
-        functions.forEach { result = processFunction(it, result, tagElement) }
-        return result.toString()
+        var result: Any? = value
+        functions.forEach { result = processFunction(it, result!!, tagElement) }
+        return result?.toString()
     }
 
 
@@ -92,7 +93,7 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
      * supprimeParagrapheSiFaux_expression --> Si l'expression est fausse, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      * supprimeParagrapheSiBlank_expression --> Si l'expression est une chaîne blanche, le paragraphe contenant le controle de contenu est supprimé. Pas d'autre fonction possible derrière
      */
-    protected open fun processFunction(function: String, value: Any, tagElement: Any?): Any {
+    protected open fun processFunction(function: String, value: Any?, tagElement: Any?): Any? {
 
         val functionName = function.replace(FUNCTION_REGEXP, "$1")
         val complement = function.replace(FUNCTION_REGEXP, "$3")
@@ -121,7 +122,15 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
             }
             "joinListePar" -> {
                 if (value !is Iterable<*>) return ""
-                return value.map { it.toString() }.joinToString(TypeSeparateur.valueOf(complement.replace("-", "_")).separateur)
+                val typeSeparateur = TypeSeparateur.valueOf(complement.replace("-", "_"))
+                if (value.count() == 1 || typeSeparateur.separateurFinal == null)
+                    return value.joinToString(typeSeparateur.separateur) { it.toString() }
+                else
+                    return ( //
+                            value.toList() //
+                                    .subList(0, value.count() - 2) //
+                                    .joinToString(typeSeparateur.separateur) { it.toString() } //
+                            ) + typeSeparateur.separateurFinal + value.last().toString()
             }
             "siVrai" -> {
                 val conditionValue = processCondition(function, complement)
@@ -153,8 +162,54 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
                 }
                 return value
             }
+            "defautSiVrai" -> {
+                if (equalsToBoolean(value, true) && tagElement is SdtElement) {
+                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                }
+                return ""
+            }
+            "defautSiFaux" -> {
+                if (equalsToBoolean(value, false) && tagElement is SdtElement) {
+                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                }
+                return ""
+            }
+            "defautSiNull" -> {
+                if (value == null && tagElement is SdtElement) {
+                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                }
+                return ""
+            }
+            "defautSiNonNull" -> {
+                if (value != null && tagElement is SdtElement) {
+                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                }
+                return ""
+            }
+            "docx" -> {
+                if (value == null || tagElement !is SdtElement) return null
+                if (replaceTagByDocxElements(tagElement, if (value is Child) listOf(value) else value as List<Any>)) "" else null
+            }
             else -> throw TechnicalException("Impossible de résoudre la fonction $functionName")
         }
+    }
+
+    /**
+     * Remplace le contrôle de contenu par la liste d'elements docx fournis
+     * @param tagElement Contrôle de contenu à supprimer
+     * @param listeDocxElement Liste d'éléments remplaçant le contrôle de contenu
+     */
+    protected fun replaceTagByDocxElements(tagElement: SdtElement, listeDocxElement: List<Any>): Boolean {
+        val parent = (tagElement as Child).parent as ContentAccessor
+        for (i in 0 until parent.content.size) {
+            val child = parent.content[i]
+            if (child === tagElement || child is JAXBElement<*> && child.value === tagElement) {
+                parent.content.removeAt(i)
+                parent.content.addAll(i, listeDocxElement)
+                return true
+            }
+        }
+        return false
     }
 
     /**
@@ -174,7 +229,7 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
      *      value = false, expected = false --> true
      *      value = "false", expected = false --> true
      */
-    protected fun equalsToBoolean(value: Any, expected: Boolean): Boolean {
+    protected fun equalsToBoolean(value: Any?, expected: Boolean): Boolean {
         return (value is Boolean && value == expected) || (value is String && value.toLowerCase() == (if (expected) "true" else "false"))
     }
 
