@@ -8,7 +8,7 @@ import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
-import java.util.Date
+import java.util.*
 
 /*-
  * #%L
@@ -102,6 +102,9 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
             "lowercase" -> value.toString().toLowerCase()
             "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value)
             "formatDate" -> if (value !is Date) "" else DateUtil.formatDate(value)
+            "formatHeureMinuteH" -> if (value !is Date) "" else DateUtil.formatHeureMinuteH(value)
+            "parseDate" -> DateUtil.parseDate(value.toString())
+            "parseDateTime" -> DateUtil.parseDateTime(value.toString())
             "remplaceSautLigneParVirgule" -> value.toString().replace(" *\n\\s*".toRegex(), ", ")
             "remplaceVirguleParSautLigne" -> value.toString().replace(",\\s*".toRegex(), "\n")
             "split" -> {

@@ -22,10 +22,8 @@ package nc.noumea.mairie.webapps.core.tools.zk.util;
  * #L%
  */
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
+import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
+import nc.noumea.mairie.webapps.core.tools.service.GenericService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +36,9 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 
-import nc.noumea.mairie.webapps.core.tools.domain.PersistedEntity;
-import nc.noumea.mairie.webapps.core.tools.service.GenericService;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ZkUtil {
 
@@ -98,7 +97,8 @@ public class ZkUtil {
 		if (StringUtils.endsWith(component.getId(), "-do-not-disable")) {
 			return false;
 		}
-		if (componentClassName.equals("org.zkoss.zul.Tab") || componentClassName.equals("org.zkoss.zul.Tabbox") || componentClassName.equals("org.zkoss.zul.Listheader")) {
+		if (componentClassName.equals("org.zkoss.zul.Tab") || componentClassName.equals("org.zkoss.zul.Tabbox")
+				|| componentClassName.equals("org.zkoss.zul.Listheader")) {
 			return false;
 		}
 		return true;
