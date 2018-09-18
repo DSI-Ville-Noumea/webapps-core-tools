@@ -347,7 +347,13 @@ public class TemplateDocx {
 			Object child = parent.getContent().get(i);
 			if (child == sdtElement || child instanceof JAXBElement && ((JAXBElement) child).getValue() == sdtElement) {
 				parent.getContent().remove(i);
-				parent.getContent().add(i, r);
+				if (parent instanceof P) {
+					parent.getContent().add(i, r);
+				} else {
+					P p = new P();
+					p.getContent().add(r);
+					parent.getContent().add(i, p);
+				}
 				break;
 			}
 		}
