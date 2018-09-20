@@ -163,28 +163,44 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
                 return value
             }
             "defautSiVrai" -> {
-                if (equalsToBoolean(value, true) && tagElement is SdtElement) {
-                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                if (tagElement is SdtElement) {
+                    if (equalsToBoolean(value, true)) {
+                        replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                    } else {
+                        replaceTagByDocxElements(tagElement, null)
+                    }
                 }
-                return ""
+                return value
             }
             "defautSiFaux" -> {
-                if (equalsToBoolean(value, false) && tagElement is SdtElement) {
-                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                if (tagElement is SdtElement) {
+                    if (equalsToBoolean(value, false)) {
+                        replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                    } else {
+                        replaceTagByDocxElements(tagElement, null)
+                    }
                 }
-                return ""
+                return value
             }
             "defautSiNull" -> {
-                if (value == null && tagElement is SdtElement) {
-                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                if (tagElement is SdtElement) {
+                    if (value == null) {
+                        replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                    } else {
+                        replaceTagByDocxElements(tagElement, null)
+                    }
                 }
-                return ""
+                return value
             }
             "defautSiNonNull" -> {
-                if (value != null && tagElement is SdtElement) {
-                    replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                if (tagElement is SdtElement) {
+                    if (value != null) {
+                        replaceTagByDocxElements(tagElement, tagElement.sdtContent.content)
+                    } else {
+                        replaceTagByDocxElements(tagElement, null)
+                    }
                 }
-                return ""
+                return value
             }
             "docx" -> {
                 if (value == null || tagElement !is SdtElement) return null
@@ -199,13 +215,13 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
      * @param tagElement Contrôle de contenu à supprimer
      * @param listeDocxElement Liste d'éléments remplaçant le contrôle de contenu
      */
-    protected fun replaceTagByDocxElements(tagElement: SdtElement, listeDocxElement: List<Any>): Boolean {
+    protected fun replaceTagByDocxElements(tagElement: SdtElement, listeDocxElement: List<Any>?): Boolean {
         val parent = (tagElement as Child).parent as ContentAccessor
         for (i in 0 until parent.content.size) {
             val child = parent.content[i]
             if (child === tagElement || child is JAXBElement<*> && child.value === tagElement) {
                 parent.content.removeAt(i)
-                parent.content.addAll(i, listeDocxElement)
+                if (listeDocxElement != null) parent.content.addAll(i, listeDocxElement)
                 return true
             }
         }
