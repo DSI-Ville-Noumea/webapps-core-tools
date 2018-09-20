@@ -10,24 +10,24 @@ package nc.noumea.mairie.webapps.core.tools.util;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import java.util.Date;
-import java.util.Locale;
-
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Date;
+import java.util.Locale;
 
 public class DateUtil {
 	private static final DateTimeFormatter	YEAR_FORMATTER						= dateTimeFormatterNCForPattern("yyyy");
@@ -52,6 +52,41 @@ public class DateUtil {
 
 	public static String formatDateGeneric(DateTimeFormatter dateTimeFormatter, Date date) {
 		return date == null || dateTimeFormatter == null ? "" : dateTimeFormatter.print(new DateTime(date));
+	}
+
+	public static String formatDateEnLettre(Date date) {
+		StringBuilder result = new StringBuilder();
+		DateTime dateTime = new DateTime(date);
+		result.append(dateTime.dayOfWeek().getAsText(Locale.FRANCE));
+		result.append(" ");
+		result.append(FormatUtil.convertNombreEnLettre(dateTime.getDayOfMonth()));
+		result.append(" ");
+		result.append(libelleMois(dateTime.getMonthOfYear()));
+		result.append(" ");
+		result.append(FormatUtil.convertNombreEnLettre(dateTime.getYear()));
+		return result.toString();
+	}
+
+	public static String formatTimeEnLettre(Date date) {
+		StringBuilder result = new StringBuilder();
+		DateTime dateTime = new DateTime(date);
+		result.append(FormatUtil.convertNombreEnLettre(dateTime.getHourOfDay()));
+		result.append(" heure" + (dateTime.getHourOfDay() > 1 ? "s" : ""));
+		if (dateTime.getMinuteOfHour() > 0) {
+			result.append(" ");
+			result.append(FormatUtil.convertNombreEnLettre(dateTime.getMinuteOfHour()));
+			result.append(String.format("%d", dateTime.getMinuteOfHour()).endsWith("1") ? "e" : "");
+			result.append(" minute" + (dateTime.getMinuteOfHour() > 1 ? "s" : ""));
+		}
+		return result.toString();
+	}
+
+	public static String formatDateTimeEnLettre(Date date) {
+		StringBuilder result = new StringBuilder();
+		result.append(formatDateEnLettre(date));
+		result.append(" à ");
+		result.append(formatTimeEnLettre(date));
+		return result.toString();
 	}
 
 	public static String formatDateMoisAnnee(Date date) {
@@ -178,8 +213,8 @@ public class DateUtil {
 			return "";
 		}
 		DateTime dateTime = new DateTime(date);
-		return dateTime.dayOfWeek().getAsText(Locale.FRANCE) + " " + dateTime.getDayOfMonth() + " "
-				+ libelleMois(dateTime.getMonthOfYear()) + " " + dateTime.getYear();
+		return dateTime.dayOfWeek().getAsText(Locale.FRANCE) + " " + dateTime.getDayOfMonth() + " " + libelleMois(dateTime.getMonthOfYear()) + " "
+				+ dateTime.getYear();
 	}
 
 	/**
