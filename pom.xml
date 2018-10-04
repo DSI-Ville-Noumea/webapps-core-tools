@@ -41,7 +41,7 @@
         <com.ibm.icu.icu4j.version>62.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
         <zk.version>8.5.0</zk.version>
-        <com.googlecode.libphonenumber.version>8.9.13</com.googlecode.libphonenumber.version>
+        <com.googlecode.libphonenumber.version>8.9.15</com.googlecode.libphonenumber.version>
 
         <!--plugins versions-->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
