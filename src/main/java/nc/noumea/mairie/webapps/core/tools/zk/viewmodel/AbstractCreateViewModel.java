@@ -83,16 +83,21 @@ public abstract class AbstractCreateViewModel<T extends PersistedEntity> extends
 			return;
 		}
 
-		BeforeSavePersistedEntityEvent eventBeforeSave = new BeforeSavePersistedEntityEvent(entity,
-				this.popup.getParent() == null ? this.popup : this.popup.getParent());
-		Events.sendEvent(eventBeforeSave);
-
-		if (eventBeforeSave.isStopSave()) {
-			return;
+		if (this.popup != null) {
+			BeforeSavePersistedEntityEvent eventBeforeSave = new BeforeSavePersistedEntityEvent(entity,
+					this.popup.getParent() == null ? this.popup : this.popup.getParent());
+			Events.sendEvent(eventBeforeSave);
+			if (eventBeforeSave.isStopSave()) {
+				return;
+			}
 		}
 
 		getService().save(entity);
-		Events.sendEvent(new AfterSavePersistedEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
+
+		if (this.popup != null) {
+			Events.sendEvent(new AfterSavePersistedEntityEvent(entity, this.popup.getParent() == null ? this.popup : this.popup.getParent()));
+		}
+
 		postGlobalCommandRefreshListe();
 		closePopup();
 		if (this.openAfterCreate()) {
