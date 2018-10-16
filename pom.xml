@@ -38,7 +38,7 @@
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
         <imgscalr.lib.version>4.2</imgscalr.lib.version>
-        <com.ibm.icu.icu4j.version>62.1</com.ibm.icu.icu4j.version>
+        <com.ibm.icu.icu4j.version>63.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
         <zk.version>8.5.0</zk.version>
         <com.googlecode.libphonenumber.version>8.9.15</com.googlecode.libphonenumber.version>
