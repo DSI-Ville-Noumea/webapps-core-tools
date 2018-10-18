@@ -54,7 +54,8 @@ class TemplateDocxTagResolverTest {
 
     class TagResolver(val expressionResolver: ExpressionResolver) : AbstractTemplateTagResolver() {
         override fun resolveExpression(expression: String): Any? {
-            return expressionResolver.resolveExpressionByPathFromRootObject(expression) ?: expressionResolver.resolveExpressionByArbitraryRules(expression)
+            return expressionResolver.resolveExpressionByPathFromRootObject(expression)
+                    ?: expressionResolver.resolveExpressionByArbitraryRules(expression)
         }
     }
 
@@ -65,6 +66,8 @@ class TemplateDocxTagResolverTest {
 
         assertEquals("VALEUR\n DE MON, EXPRESSION", tagResolver.resolve("uppercase_uneChaine", SdtBlock()))
         assertEquals("valeur\n de mon, expression", tagResolver.resolve("lowercase_uneChaine", SdtBlock()))
+        assertEquals("Valeur\n de mon, Expression", tagResolver.resolve("capitalize_uneChaine", SdtBlock()))
+        assertEquals("valeur\n de mon, Expression", tagResolver.resolve("decapitalize_uneChaine", SdtBlock()))
         assertEquals("8 septembre 2018", tagResolver.resolve("formatDateAvecMoisEnTexte_uneDate", SdtBlock()))
         assertEquals("Valeur, de mon, Expression", tagResolver.resolve("remplaceSautLigneParVirgule_uneChaine", SdtBlock()))
         assertEquals("Valeur\n de mon\nExpression", tagResolver.resolve("remplaceVirguleParSautLigne_uneChaine", SdtBlock()))

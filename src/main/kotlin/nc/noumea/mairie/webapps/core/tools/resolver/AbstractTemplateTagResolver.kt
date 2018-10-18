@@ -8,7 +8,7 @@ import org.docx4j.wml.ContentAccessor
 import org.docx4j.wml.P
 import org.docx4j.wml.SdtElement
 import org.jvnet.jaxb2_commons.ppp.Child
-import java.util.*
+import java.util.Date
 import javax.xml.bind.JAXBElement
 
 /*-
@@ -101,6 +101,8 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
         return when (functionName) {
             "uppercase" -> value.toString().toUpperCase()
             "lowercase" -> value.toString().toLowerCase()
+            "capitalize" -> value.toString().capitalize()
+            "decapitalize" -> value.toString().decapitalize()
             "formatDateAvecMoisEnTexte" -> if (value !is Date) "" else DateUtil.formatDateAvecMoisEnTexte(value)
             "formatDate" -> if (value !is Date) "" else DateUtil.formatDate(value)
             "formatHeureMinuteH" -> if (value !is Date) "" else DateUtil.formatHeureMinuteH(value)
