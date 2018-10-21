@@ -649,19 +649,44 @@ public class TemplateDocx {
 			return;
 		}
 		Tr workingRow = XmlUtils.deepCopy(templateRow);
-		List<?> textElements = getAllElementFromObject(workingRow, Text.class);
-		log.debug("addRowToTable, textElements = " + textElements + ", replacements = " + replacements);
-		for (Object object : textElements) {
-			Text text = (Text) object;
-			String textValue = StringUtils.trimToEmpty(text.getValue());
+		List<?> tcElements = getAllElementFromObject(workingRow, Tc.class);
+		log.debug("addRowToTable, tcElements = " + tcElements + ", replacements = " + replacements);
+		ObjectFactory factory = Context.getWmlObjectFactory();
+		int i = 0;
+		for (Object object : tcElements) {
+			Tc tc = (Tc) object;
+			Tr tr = (Tr) tc.getParent();
+			String textValue = StringUtils.trimToEmpty(tc.getContent().get(0).toString());
 			String replacementValue = replacements.get(textValue);
 			if (replacementValue == null && keepTextNotMatched) {
 				continue; // tableFilling demande à conserver le texte qui ne correspond à rien dans replacements
 			}
-			text.setValue(replacementValue == null ? "" : replacementValue);
+
+			Tc newTc = factory.createTc();
+			newTc.setTcPr(tc.getTcPr());
+			if (replacementValue == null) {
+				createParagraphInRow(factory, newTc, "");
+			} else {
+				for (String phrase : replacementValue.split("\n")) {
+					createParagraphInRow(factory, newTc, phrase);
+				}
+			}
+
+			tr.getContent().set(i, newTc);
+			i++;
 		}
 
 		reviewtable.getContent().add(workingRow);
+	}
+
+	private static void createParagraphInRow(ObjectFactory factory, Tc newTc, String phrase) {
+		Text text = factory.createText();
+		P para = factory.createP();
+		text.setValue(phrase);
+		R run = factory.createR();
+		run.getContent().add(text);
+		para.getContent().add(run);
+		newTc.getContent().add(para);
 	}
 
 	/**

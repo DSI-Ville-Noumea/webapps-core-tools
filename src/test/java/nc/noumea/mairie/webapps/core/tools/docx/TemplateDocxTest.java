@@ -75,7 +75,7 @@ public class TemplateDocxTest {
 		Map<String, String> mapCodeValeurLigne1 = new HashMap<>();
 		mapCodeValeurLigne1.put("1", "Ligne 1 - Colonne 1");
 		mapCodeValeurLigne1.put("2", "Ligne 1 - Colonne 2");
-		mapCodeValeurLigne1.put("3", "Ligne 1 - Colonne 3");
+		mapCodeValeurLigne1.put("3", "Ligne 1 - Colonne 3\nSaut à la ligne");
 		tableFilling.getListeMapCodeValeur().add(mapCodeValeurLigne1);
 		//
 		Map<String, String> mapCodeValeurLigne2 = new HashMap<>();
