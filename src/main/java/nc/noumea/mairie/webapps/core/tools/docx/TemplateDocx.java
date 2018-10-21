@@ -649,6 +649,7 @@ public class TemplateDocx {
 			return;
 		}
 		Tr workingRow = XmlUtils.deepCopy(templateRow);
+
 		List<?> tcElements = getAllElementFromObject(workingRow, Tc.class);
 		log.debug("addRowToTable, tcElements = " + tcElements + ", replacements = " + replacements);
 		ObjectFactory factory = Context.getWmlObjectFactory();
@@ -656,6 +657,8 @@ public class TemplateDocx {
 		for (Object object : tcElements) {
 			Tc tc = (Tc) object;
 			Tr tr = (Tr) tc.getParent();
+			List<Object> listeP = ((P) tc.getContent().get(0)).getContent();
+			RPr rPr = listeP.isEmpty() ? null : ((R) listeP.get(0)).getRPr();
 			String textValue = StringUtils.trimToEmpty(tc.getContent().get(0).toString());
 			String replacementValue = replacements.get(textValue);
 			if (replacementValue == null && keepTextNotMatched) {
@@ -665,10 +668,10 @@ public class TemplateDocx {
 			Tc newTc = factory.createTc();
 			newTc.setTcPr(tc.getTcPr());
 			if (replacementValue == null) {
-				createParagraphInRow(factory, newTc, "");
+				createParagraphInRow(factory, newTc, "", rPr);
 			} else {
 				for (String phrase : replacementValue.split("\n")) {
-					createParagraphInRow(factory, newTc, phrase);
+					createParagraphInRow(factory, newTc, phrase, rPr);
 				}
 			}
 
@@ -679,11 +682,12 @@ public class TemplateDocx {
 		reviewtable.getContent().add(workingRow);
 	}
 
-	private static void createParagraphInRow(ObjectFactory factory, Tc newTc, String phrase) {
+	private static void createParagraphInRow(ObjectFactory factory, Tc newTc, String phrase, RPr rPr) {
 		Text text = factory.createText();
 		P para = factory.createP();
 		text.setValue(phrase);
 		R run = factory.createR();
+		run.setRPr(rPr);
 		run.getContent().add(text);
 		para.getContent().add(run);
 		newTc.getContent().add(para);
