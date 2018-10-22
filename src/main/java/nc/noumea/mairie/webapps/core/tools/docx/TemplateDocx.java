@@ -657,7 +657,8 @@ public class TemplateDocx {
 		for (Object object : tcElements) {
 			Tc tc = (Tc) object;
 			Tr tr = (Tr) tc.getParent();
-			List<Object> listeP = ((P) tc.getContent().get(0)).getContent();
+			P p = ((P) tc.getContent().get(0));
+			List<Object> listeP = p.getContent();
 			RPr rPr = listeP.isEmpty() ? null : ((R) listeP.get(0)).getRPr();
 			String textValue = StringUtils.trimToEmpty(tc.getContent().get(0).toString());
 			String replacementValue = replacements.get(textValue);
@@ -668,10 +669,10 @@ public class TemplateDocx {
 			Tc newTc = factory.createTc();
 			newTc.setTcPr(tc.getTcPr());
 			if (replacementValue == null) {
-				createParagraphInRow(factory, newTc, "", rPr);
+				createParagraphInRow(factory, newTc, "", rPr, p.getPPr());
 			} else {
 				for (String phrase : replacementValue.split("\n")) {
-					createParagraphInRow(factory, newTc, phrase, rPr);
+					createParagraphInRow(factory, newTc, phrase, rPr, p.getPPr());
 				}
 			}
 
@@ -682,9 +683,10 @@ public class TemplateDocx {
 		reviewtable.getContent().add(workingRow);
 	}
 
-	private static void createParagraphInRow(ObjectFactory factory, Tc newTc, String phrase, RPr rPr) {
+	private static void createParagraphInRow(ObjectFactory factory, Tc newTc, String phrase, RPr rPr, PPr pPr) {
 		Text text = factory.createText();
 		P para = factory.createP();
+		para.setPPr(pPr);
 		text.setValue(phrase);
 		R run = factory.createR();
 		run.setRPr(rPr);
