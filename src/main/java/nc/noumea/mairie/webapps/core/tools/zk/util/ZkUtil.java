@@ -95,7 +95,7 @@ public class ZkUtil {
 		if (StringUtils.startsWith(component.getId(), "popupPieceJointe")) {
 			return false;
 		}
-		if (StringUtils.endsWith(component.getId(), "-do-not-disable")) {
+		if (StringUtils.contains(component.getId(), "-do-not-disable")) {
 			return false;
 		}
 		if (componentClassName.equals("org.zkoss.zul.Tab") || componentClassName.equals("org.zkoss.zul.Tabbox")
@@ -108,7 +108,7 @@ public class ZkUtil {
 	private static boolean isComponentToHide(Component component) {
 		String componentClassName = component.getClass().getName();
 
-		if (StringUtils.endsWith(component.getId(), "-do-not-hide")) {
+		if (StringUtils.contains(component.getId(), "-do-not-hide")) {
 			return false;
 		}
 
