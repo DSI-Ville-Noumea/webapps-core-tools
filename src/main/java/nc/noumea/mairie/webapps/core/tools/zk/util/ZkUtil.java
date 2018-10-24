@@ -107,6 +107,11 @@ public class ZkUtil {
 
 	private static boolean isComponentToHide(Component component) {
 		String componentClassName = component.getClass().getName();
+
+		if (StringUtils.endsWith(component.getId(), "-do-not-hide")) {
+			return false;
+		}
+
 		if (componentClassName.equals("org.zkoss.zul.Toolbarbutton")) {
 			return true;
 		}
