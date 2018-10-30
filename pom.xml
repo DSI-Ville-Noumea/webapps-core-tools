@@ -40,7 +40,8 @@
         <imgscalr.lib.version>4.2</imgscalr.lib.version>
         <com.ibm.icu.icu4j.version>63.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
-        <zk.version>8.5.2</zk.version>
+        <!-- dernière version dispo sous ZK CE, cf #47086 -->
+        <zk.version>8.5.0</zk.version>
         <com.googlecode.libphonenumber.version>8.9.16</com.googlecode.libphonenumber.version>
 
         <!--plugins versions-->
@@ -69,10 +70,12 @@
             <name>ZK CE Repository</name>
             <url>http://mavensync.zkoss.org/maven2</url>
         </repository>
-        <repository>
-            <id>ZK EE</id>
-            <url>https://maven.zkoss.org/repo/zk/ee</url>
-        </repository>
+
+        <!-- voir #47086 [Technique] Intégration build continu jitpack > les clés ZK ne passent pas -->
+        <!--<repository>-->
+            <!--<id>ZK EE</id>-->
+            <!--<url>https://maven.zkoss.org/repo/zk/ee</url>-->
+        <!--</repository>-->
     </repositories>
 
     <dependencies>
