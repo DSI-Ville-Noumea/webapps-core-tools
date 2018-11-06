@@ -130,7 +130,7 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
                 else
                     return ( //
                             value.toList() //
-                                    .subList(0, value.count() - 2) //
+                                    .subList(0, value.count() - 1) //
                                     .joinToString(typeSeparateur.separateur) { it.toString() } //
                             ) + typeSeparateur.separateurFinal + value.last().toString()
             }

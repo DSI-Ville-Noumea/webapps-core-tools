@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.57</version>
+    <version>1.00.58</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -73,8 +73,8 @@
 
         <!-- voir #47086 [Technique] Intégration build continu jitpack > les clés ZK ne passent pas -->
         <!--<repository>-->
-            <!--<id>ZK EE</id>-->
-            <!--<url>https://maven.zkoss.org/repo/zk/ee</url>-->
+        <!--<id>ZK EE</id>-->
+        <!--<url>https://maven.zkoss.org/repo/zk/ee</url>-->
         <!--</repository>-->
     </repositories>
 
