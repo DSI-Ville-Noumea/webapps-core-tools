@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,17 +38,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import nc.noumea.mairie.webapps.core.tools.domain.Entity;
 import nc.noumea.mairie.webapps.core.tools.error.TechnicalException;
 import nc.noumea.mairie.webapps.core.tools.type.ActifInactif;
-
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.validation.ConstraintViolationException;
 
 @Transactional
 public abstract class GenericService<T extends Entity, R extends PagingAndSortingRepository> {
@@ -73,9 +71,20 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 		return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
-
-    public <S extends T> S save(S var1) {
-        return (S) getRepository().save(var1);
+	public <S extends T> S save(S var1) {
+		try {
+			return (S) getRepository().save(var1);
+		} catch (OptimisticLockException | OptimisticLockingFailureException e) {
+			throw new RuntimeException(
+					"Sauvegarde impossible, l'enregistrement a été modifié par un autre utilisateur (veuillez fermer l'onglet, le ré-ouvrrir et resaisir vos modifications)",
+					e);
+		} catch (DuplicateKeyException e) {
+			throw new RuntimeException("Sauvegarde refusée pour cause de création de doublon : " + e.getLocalizedMessage(), e);
+		} catch (PersistenceException | DataAccessException e) {
+			throw new RuntimeException(
+					"Sauvegarde refusée par la base de données : vérifiez que votre enregistrement n'est pas un doublon et que les champs sont correctement renseignés",
+					e);
+		}
 	}
 
 	public <S extends T> Iterable<S> saveAll(Iterable<S> var1) {
@@ -111,11 +120,11 @@ public abstract class GenericService<T extends Entity, R extends PagingAndSortin
 	}
 
 	public void delete(Long entite) {
-        getRepository().deleteById(entite);
+		getRepository().deleteById(entite);
 	}
 
 	public void delete(T entite) {
-        getRepository().delete(entite);
+		getRepository().delete(entite);
 	}
 
 	public void deleteAll(Iterable<? extends T> collectionEntite) {

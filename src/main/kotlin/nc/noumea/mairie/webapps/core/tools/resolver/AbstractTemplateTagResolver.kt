@@ -208,6 +208,9 @@ abstract class AbstractTemplateTagResolver : TemplateTagResolver {
                 if (value == null || tagElement !is SdtElement) return null
                 if (replaceTagByDocxElements(tagElement, if (value is Child) listOf(value) else value as List<Any>)) "" else null
             }
+            "videSiNull" -> {
+                return if (value == null) "" else value
+            }
             else -> throw TechnicalException("Impossible de résoudre la fonction $functionName")
         }
     }
