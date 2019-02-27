@@ -31,7 +31,7 @@
         <commons.collections.version>4.2</commons.collections.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.codec.version>1.11</commons.codec.version>
-        <org.docx4j.version>6.1.0</org.docx4j.version>
+        <org.docx4j.version>6.1.2</org.docx4j.version>
         <docx4j-export-fo.version>6.1.0</docx4j-export-fo.version>
         <slf4j.version>1.7.25</slf4j.version>
         <lombok.version>1.18.4</lombok.version>
