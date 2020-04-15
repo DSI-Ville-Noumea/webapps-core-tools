@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <kotlin.version>1.3.10</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -42,21 +43,20 @@
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
         <!-- dernière version dispo sous ZK CE, cf #47086 -->
         <zk.version>8.6.0.1</zk.version>
-        <com.googlecode.libphonenumber.version>8.9.16</com.googlecode.libphonenumber.version>
         <com.googlecode.libphonenumber.version>8.10.2</com.googlecode.libphonenumber.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+
+        <!-- tests -->
+        <junit.platform.version>1.3.2</junit.platform.version>
+        <assertj.version>3.11.1</assertj.version>
+        <h2.version>1.4.197</h2.version>
 
         <!--plugins versions-->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <license-maven-plugin.version>1.16</license-maven-plugin.version>
-        <javax.mail.version>1.6.2</javax.mail.version>
-        <kotlin.version>1.3.10</kotlin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <junit.platform.version>1.3.2</junit.platform.version>
-        <junit.vintage.version>5.3.2</junit.vintage.version>
-        <junit.jupiter.version>5.3.2</junit.jupiter.version>
-        <assertj.version>3.11.1</assertj.version>
-        <h2.version>1.4.197</h2.version>
+
     </properties>
 
     <scm>
@@ -184,12 +184,6 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
@@ -199,16 +193,12 @@
             <version>2.1.3.RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- test dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.vintage.version}</version>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
