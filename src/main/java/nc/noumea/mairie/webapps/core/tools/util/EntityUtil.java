@@ -89,8 +89,12 @@ public class EntityUtil {
 	/**
 	 * Méthode pour "charger" une collection, pour éviter pb de lazy loading
 	 *
+	 * @deprecated A la place de cette méthode, utiliser Hibernate.initialize()
+	 * qui est la méthde prévue pour faire ça
+	 *
 	 * @param collection collection à charger
 	 */
+	@Deprecated
 	public static void chargeCollection(@SuppressWarnings("rawtypes") Collection collection) {
 		// ne pas enlever cette ligne de debug, volontaire
 		if (collection != null) {
@@ -101,8 +105,12 @@ public class EntityUtil {
 	/**
 	 * Méthode pour "charger" un élément, pour éviter pb de lazy loading
 	 *
+	 * @deprecated A la place de cette méthode, utiliser Hibernate.initialize()
+	 * qui est la méthde prévue pour faire ça
+	 *
 	 * @param element élément à charger
 	 */
+	@Deprecated
 	public static void chargeElement(Object element) {
 		// ne pas enlever cette ligne de debug, volontaire
 		if (element != null) {
