@@ -48,7 +48,7 @@
         <javax.mail.version>1.6.2</javax.mail.version>
 
         <!-- tests -->
-        <junit.platform.version>1.4.0</junit.platform.version>
+        <junit.platform.version>1.6.2</junit.platform.version>
         <assertj.version>3.11.1</assertj.version>
 
         <!--plugins versions-->
