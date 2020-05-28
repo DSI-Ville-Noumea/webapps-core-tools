@@ -79,16 +79,6 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 
 	protected T				entity;
 
-	protected Boolean dirty = false;
-
-	public Boolean getDirty() {
-		return dirty;
-	}
-
-	public void setDirty(Boolean isDirty) {
-		this.dirty = isDirty;
-	}
-
 	/**
 	 * @return l'entité concernée
 	 */
@@ -161,15 +151,7 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 	 * @param entity entité concernée
 	 */
 	public void fermeOnglet(@BindingParam("entity") T entity) {
-
-		if (this.dirty) {
-			Messagebox.show("Attention, des données ne sont pas sauvegardées sur cet onglet, confirmez vous la fermeture ?", "Information non sauvegardées", new Messagebox.Button[] { Messagebox.Button.YES, Messagebox.Button.NO },
-					Messagebox.QUESTION, evt -> {
-						if (evt.getName().equals("onYes")) {
-							defaultPublishOnQueue().publish(new FermeOngletEntityEvent(entity));
-						}
-					});
-		}
+		defaultPublishOnQueue().publish(new FermeOngletEntityEvent(entity));
 	}
 
 	/**
