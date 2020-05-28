@@ -28,4 +28,7 @@ import java.io.Serializable
 interface Entity : Serializable {
     val id: Long?
     val libelleCourt: String?
+    var initialState: String?
+
+    fun getHash():String
 }

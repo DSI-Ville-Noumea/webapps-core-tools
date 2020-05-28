@@ -81,6 +81,14 @@ public abstract class AbstractViewModel<T extends Entity> extends AbstractPopupV
 
 	protected Boolean dirty = false;
 
+	public Boolean getDirty() {
+		return dirty;
+	}
+
+	public void setDirty(Boolean isDirty) {
+		this.dirty = isDirty;
+	}
+
 	/**
 	 * @return l'entité concernée
 	 */

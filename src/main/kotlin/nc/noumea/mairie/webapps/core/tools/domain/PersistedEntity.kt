@@ -26,8 +26,14 @@ package nc.noumea.mairie.webapps.core.tools.domain
 import nc.noumea.mairie.webapps.core.tools.util.EntityUtil
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreur
 import nc.noumea.mairie.webapps.core.tools.util.MessageErreurUtil
+import java.security.MessageDigest
 import javax.persistence.MappedSuperclass
 import javax.persistence.Version
+import kotlin.reflect.KCallable
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.full.valueParameters
 
 /**
  * Entité abstraite parente des entités persistées de l'application.
@@ -42,6 +48,9 @@ abstract class PersistedEntity : Entity {
     fun getMaxLength(property: String): Int {
         return EntityUtil.getMaxLength(this, property)!!
     }
+
+    @Transient
+    override var initialState: String? = getHash()
 
     override fun hashCode(): Int {
         val prime = 31
@@ -88,6 +97,21 @@ abstract class PersistedEntity : Entity {
      */
     open fun construitListeMessageErreur(): List<MessageErreur> {
         return MessageErreurUtil.construitListeMessageErreurViolationContrainte(this)
+    }
+
+    fun setInitialState() {
+        this.initialState = getHash()
+    }
+
+    override fun getHash(): String {
+        val kClass = this::class
+        var result: String = ""
+         kClass.declaredMemberProperties.forEach {
+             if (it.visibility == KVisibility.PUBLIC) {
+                 result = result + it.getter.call(this)
+             }
+         }
+        return result
     }
 
 }
