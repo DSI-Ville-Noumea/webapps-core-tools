@@ -3,7 +3,10 @@ name: Publish package to GitHub Packages
 on:
   release:
     types: [created]
-    
+
+env:
+  TZ: Pacific/Noumea
+
 jobs:
   publish:
     runs-on: ubuntu-latest
