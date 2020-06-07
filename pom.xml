@@ -65,6 +65,14 @@
         <url>https://github.com/DSI-Ville-Noumea/webapps-core-tools.git</url>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/DSI-Ville-Noumea/webapps-core-tools</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>ZK CE</id>
