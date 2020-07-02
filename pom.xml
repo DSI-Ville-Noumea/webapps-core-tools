@@ -19,20 +19,20 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.3.71</kotlin.version>
+        <kotlin.version>1.3.10</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!--dependencies versions-->
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <spring.ldap.version>2.3.1.RELEASE</spring.ldap.version>
-        <spring.data.jpa.version>2.1.8.RELEASE</spring.data.jpa.version>
+        <spring.data.jpa.version>2.1.3.RELEASE</spring.data.jpa.version>
         <joda-time.version>2.10.1</joda-time.version>
-        <hibernate-validator.version>6.1.3.Final</hibernate-validator.version>
-        <commons.collections.version>4.4</commons.collections.version>
+        <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
+        <commons.collections.version>4.2</commons.collections.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.codec.version>1.11</commons.codec.version>
-        <org.docx4j.version>6.1.2</org.docx4j.version>
+        <org.docx4j.version>6.1.0</org.docx4j.version>
         <docx4j-export-fo.version>6.1.0</docx4j-export-fo.version>
         <slf4j.version>1.7.25</slf4j.version>
         <lombok.version>1.18.4</lombok.version>
@@ -41,19 +41,19 @@
         <imgscalr.lib.version>4.2</imgscalr.lib.version>
         <com.ibm.icu.icu4j.version>63.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
-        <spring-data-framework.version>2.1.6.RELEASE</spring-data-framework.version>
         <!-- dernière version dispo sous ZK CE, cf #47086 -->
         <zk.version>8.6.0.1</zk.version>
-        <com.googlecode.libphonenumber.version>8.12.1</com.googlecode.libphonenumber.version>
+        <com.googlecode.libphonenumber.version>8.10.2</com.googlecode.libphonenumber.version>
         <javax.mail.version>1.6.2</javax.mail.version>
 
         <!-- tests -->
-        <junit.platform.version>1.4.0</junit.platform.version>
+        <junit.platform.version>1.3.2</junit.platform.version>
         <assertj.version>3.11.1</assertj.version>
+        <h2.version>1.4.197</h2.version>
 
         <!--plugins versions-->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
+        <license-maven-plugin.version>1.16</license-maven-plugin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
 
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-            <version>${spring-data-framework.version}</version>
+            <version>2.1.3.RELEASE</version>
             <scope>compile</scope>
         </dependency>
 
@@ -225,6 +225,12 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
