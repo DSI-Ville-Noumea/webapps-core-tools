@@ -64,6 +64,13 @@ public class TableFilling {
 	 */
 	protected List<Map<String, String>>	listeMapCodeValeur				= new ArrayList<>();
 
+	/**
+	 * Contenu à positionner dans la table : liste de map code/valeur où code est le texte en entête à substituer (sur la 2ème ligne de la table)
+	 * L'Integer en clé permet d'identifier le numéro de ligne de chaque template Row dans le cas où on est dans un document ayant besoin de répéter
+	 * plusieurs template les uns à la suite des autres (voir modèle dans le TU)
+	 */
+	protected List<Map<Integer, Map<String, String>>>	listeMultipleTemplateRowMapCodeValeur				= new ArrayList<>();
+
 	protected List<Map<String, String>>	listeMapCodeValeurTableImbrique	= new ArrayList<>();
 
 	public TableFilling(String startOfFirstRow) {
@@ -117,6 +124,14 @@ public class TableFilling {
 		this.listeMapCodeValeur = listeMapCodeValeur;
 	}
 
+	public List<Map<Integer, Map<String, String>>> getListeMultipleTemplateRowMapCodeValeur() {
+		return listeMultipleTemplateRowMapCodeValeur;
+	}
+
+	public void setListeMultipleTemplateRowMapCodeValeur(List<Map<Integer, Map<String, String>>> listeMultipleTemplateRowMapCodeValeur) {
+		this.listeMultipleTemplateRowMapCodeValeur = listeMultipleTemplateRowMapCodeValeur;
+	}
+
 	public List<Map<String, String>> getListeMapCodeValeurTableImbrique() {
 		return listeMapCodeValeurTableImbrique;
 	}
@@ -138,6 +153,14 @@ public class TableFilling {
 			return;
 		}
 		this.listeMapCodeValeur.add(mapCodeValeur);
+	}
+
+	public void addLigneMultipleTemplateRow(Map<Integer, Map<String, String>> mapTemplateRowCodeValeur) {
+		if (mapTemplateRowCodeValeur == null) {
+			return;
+		}
+
+		this.listeMultipleTemplateRowMapCodeValeur.add(mapTemplateRowCodeValeur);
 	}
 
 	public void addLigneTableImbrique(Map<String, String> mapCodeValeur) {
