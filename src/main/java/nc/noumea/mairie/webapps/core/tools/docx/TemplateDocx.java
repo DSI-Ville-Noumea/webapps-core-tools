@@ -580,6 +580,16 @@ public class TemplateDocx {
 		List<Object> rows = getAllElementFromObject(table, Tr.class);
 
 		Tr titleRow = (Tr) rows.get(0);
+
+		if(!tableFilling.getListeMultipleTemplateRowMapCodeValeur().isEmpty()) {
+			fillTableMultipleTemplateRow(table, tableFilling, rows, titleRow);
+		}
+		else {
+			fillTableClassic(table, tableFilling, rows, titleRow);
+		}
+	}
+
+	private static void fillTableClassic(Tbl table, TableFilling tableFilling, List<Object> rows, Tr titleRow) {
 		Tr templateRow = (Tr) rows.get(tableFilling.getTemplateRowIndex());
 
 		for (Map<String, String> mapCodeValeur : tableFilling.getListeMapCodeValeur()) {
@@ -595,6 +605,28 @@ public class TemplateDocx {
 
 		// Remove the template row
 		table.getContent().remove(templateRow);
+	}
+
+	private static void fillTableMultipleTemplateRow(Tbl table, TableFilling tableFilling, List<Object> rows, Tr titleRow) {
+		for (Map<Integer, Map<String, String>> mapTemplateRowCodeValeur : tableFilling.getListeMultipleTemplateRowMapCodeValeur()) {
+			for (Integer templateRowIndex : mapTemplateRowCodeValeur.keySet()) {
+				Tr templateRow = (Tr) rows.get(templateRowIndex);
+				log.debug("add row " + mapTemplateRowCodeValeur.get(templateRowIndex));
+				addRowToTable(table, templateRow, mapTemplateRowCodeValeur.get(templateRowIndex), tableFilling.isKeepReplacementTextNotMatched());
+			}
+		}
+
+		if (tableFilling.isRemoveTitleRow()) {
+			table.getContent().remove(titleRow);
+		}
+
+		// Remove the template rows
+		for (Map<Integer, Map<String, String>> mapTemplateRowCodeValeur : tableFilling.getListeMultipleTemplateRowMapCodeValeur()) {
+			for (Integer templateRowIndex : mapTemplateRowCodeValeur.keySet()) {
+				Tr templateRow = (Tr) rows.get(templateRowIndex);
+				table.getContent().remove(templateRow);
+			}
+		}
 	}
 
 	/**

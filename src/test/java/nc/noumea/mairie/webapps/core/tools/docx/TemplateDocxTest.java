@@ -87,12 +87,54 @@ public class TemplateDocxTest {
 		// Ajout de la table au template
 		templateDocx.addTableFilling(tableFilling);
 
+		//Test multiple template row
+		testMultipleTemplateRow(templateDocx);
+
 		// Création du document de résultat
 		File fichierResultat = File.createTempFile("demo-resultat", ".docx");
 		log.info("fichier généré = " + fichierResultat.getAbsolutePath());
 		templateDocx.createDocx(fichierResultat);
 		assertTrue(fichierResultat.exists());
 		assertTrue(fichierResultat.length() > 20000d);
+	}
+
+	private void testMultipleTemplateRow(TemplateDocx templateDocx) {
+		// Remplissage d'un tableau dynamique et suppression de l'entête
+		TableFilling tableFilling = new TableFilling("Test_tableau_multiple");
+
+		// Suppression de la ligne d'entête
+		tableFilling.setRemoveTitleRow(true);
+
+		// remplir les trois premières cases de la première ligne
+		Map<String, String> mapCodeValeurLigne1 = new HashMap<>();
+		mapCodeValeurLigne1.put("1", "Ligne 1");
+		//
+		Map<String, String> mapCodeValeurLigne2 = new HashMap<>();
+		mapCodeValeurLigne2.put("1", "Ligne 2 - Colonne 1");
+		mapCodeValeurLigne2.put("2", "Ligne 2 - Colonne 2");
+		mapCodeValeurLigne2.put("3", "Ligne 2 - Colonne 3");
+		//
+		Map<String, String> mapCodeValeurLigne3 = new HashMap<>();
+		mapCodeValeurLigne3.put("1", "Ligne 3");
+		//
+		Map<String, String> mapCodeValeurLigne4 = new HashMap<>();
+		mapCodeValeurLigne4.put("1", "Ligne 4 - Colonne 1");
+		mapCodeValeurLigne4.put("2", "Ligne 4 - Colonne 2");
+		mapCodeValeurLigne4.put("3", "Ligne 4 - Colonne 3");
+
+		Map<Integer, Map<String, String>> mapTemplateRowCodeValeur = new HashMap<>();
+
+		mapTemplateRowCodeValeur.put(1, mapCodeValeurLigne1);
+		mapTemplateRowCodeValeur.put(2, mapCodeValeurLigne2);
+		tableFilling.addLigneMultipleTemplateRow(mapTemplateRowCodeValeur);
+
+		mapTemplateRowCodeValeur = new HashMap<>();
+		mapTemplateRowCodeValeur.put(1, mapCodeValeurLigne3);
+		mapTemplateRowCodeValeur.put(2, mapCodeValeurLigne4);
+		tableFilling.addLigneMultipleTemplateRow(mapTemplateRowCodeValeur);
+
+		// Ajout de la table au template
+		templateDocx.addTableFilling(tableFilling);
 	}
 
 	@Test
