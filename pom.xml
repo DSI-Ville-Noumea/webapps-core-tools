@@ -43,7 +43,7 @@
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
         <spring-data-framework.version>2.1.6.RELEASE</spring-data-framework.version>
         <!-- dernière version dispo sous ZK CE, cf #47086 -->
-        <zk.version>8.6.0.1</zk.version>
+        <zk.version>9.5.1.FL.20201006</zk.version>
         <com.googlecode.libphonenumber.version>8.12.10</com.googlecode.libphonenumber.version>
         <javax.mail.version>1.6.2</javax.mail.version>
 
