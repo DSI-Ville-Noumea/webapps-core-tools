@@ -6,7 +6,7 @@
 
     <groupId>nc.noumea.mairie</groupId>
     <artifactId>webapps-core-tools</artifactId>
-    <version>1.00.62</version>
+    <version>1.00.63</version>
 
     <name>WebApps Core Tools</name>
     <description>Ensemble de classes et patterns utilitaires</description>
@@ -39,12 +39,12 @@
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
         <imgscalr.lib.version>4.2</imgscalr.lib.version>
-        <com.ibm.icu.icu4j.version>67.1</com.ibm.icu.icu4j.version>
+        <com.ibm.icu.icu4j.version>68.1</com.ibm.icu.icu4j.version>
         <org.apache.velocity.version>1.7</org.apache.velocity.version>
         <spring-data-framework.version>2.1.6.RELEASE</spring-data-framework.version>
         <!-- dernière version dispo sous ZK CE, cf #47086 -->
-        <zk.version>8.6.0.1</zk.version>
-        <com.googlecode.libphonenumber.version>8.12.10</com.googlecode.libphonenumber.version>
+        <zk.version>9.5.0.1</zk.version>
+        <com.googlecode.libphonenumber.version>8.12.13</com.googlecode.libphonenumber.version>
         <javax.mail.version>1.6.2</javax.mail.version>
 
         <!-- tests -->
