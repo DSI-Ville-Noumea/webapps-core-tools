@@ -44,7 +44,7 @@
         <spring-data-framework.version>2.1.6.RELEASE</spring-data-framework.version>
         <!-- dernière version dispo sous ZK CE, cf #47086 -->
         <zk.version>9.5.0.1</zk.version>
-        <com.googlecode.libphonenumber.version>8.12.13</com.googlecode.libphonenumber.version>
+        <com.googlecode.libphonenumber.version>8.12.14</com.googlecode.libphonenumber.version>
         <javax.mail.version>1.6.2</javax.mail.version>
 
         <!-- tests -->
