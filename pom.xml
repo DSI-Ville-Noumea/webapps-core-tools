@@ -46,6 +46,7 @@
         <zk.version>9.5.0.1</zk.version>
         <com.googlecode.libphonenumber.version>8.12.13</com.googlecode.libphonenumber.version>
         <javax.mail.version>1.6.2</javax.mail.version>
+        <bcpg.version>1.46</bcpg.version>
 
         <!-- tests -->
         <junit.platform.version>1.7.0</junit.platform.version>
@@ -234,11 +235,16 @@
             <version>${spring-data-framework.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpg-jdk16</artifactId>
+            <version>${bcpg.version}</version>
+        </dependency>
 
         <!-- test dependencies -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
+            <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
