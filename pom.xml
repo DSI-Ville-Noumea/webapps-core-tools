@@ -62,9 +62,8 @@
         <!-- configuration pour l'analyse sonar. jacoco désactivé par defaut, pour activer,
           passer l'argument -Djacoco.skip=false à la commande maven -->
         <jacoco.skip>true</jacoco.skip>
-        <sonar.projectKey>DSI-Ville-Noumea_webapps-core-tools</sonar.projectKey>
-        <sonar.organization>dsi-ville-noumea</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.login>c40a3b2a4a11ff0940084a793ba3c9b841002589</sonar.login>
+        <sonar.projectKey>webapp-core-tools</sonar.projectKey>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
         <sonar.sources>src/main/kotlin,src/main/java</sonar.sources>
         <sonar.coverage.exclusions>**/viewmodel/**/*</sonar.coverage.exclusions>

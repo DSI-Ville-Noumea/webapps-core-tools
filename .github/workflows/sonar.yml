@@ -33,5 +33,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn test -Djacoco.skip=false
-          mvn sonar:sonar
+          mvn clean package -Djacoco.skip=false
+          mvn sonar:sonar -Dsonar.host.url=${{ secrets.SONAR_URL }} || true
