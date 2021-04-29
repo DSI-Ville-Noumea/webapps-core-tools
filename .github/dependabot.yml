@@ -1,0 +1,67 @@
+version: 2
+registries:
+  maven-repository-maven-zkoss-org-repo-zk-ee:
+    type: maven-repository
+    url: https://maven.zkoss.org/repo/zk/ee
+    username: ville-noumea
+    password: "${{secrets.MAVEN_REPOSITORY_MAVEN_ZKOSS_ORG_REPO_ZK_EE_PASSWORD}}"
+
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: sunday
+    time: "15:00"
+    timezone: Pacific/Noumea
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.zkoss.zk:zkbind
+    versions:
+    - "> 8.6.0.1, < 8.7"
+  - dependency-name: org.zkoss.zk:zkbind
+    versions:
+    - ">= 9.0.a, < 9.1"
+  - dependency-name: org.zkoss.zk:zul
+    versions:
+    - "> 8.6.0.1, < 8.7"
+  - dependency-name: org.zkoss.zk:zul
+    versions:
+    - ">= 9.0.a, < 9.1"
+  - dependency-name: com.googlecode.libphonenumber:libphonenumber
+    versions:
+    - 8.12.16
+    - 8.12.17
+    - 8.12.18
+    - 8.12.19
+    - 8.12.20
+  - dependency-name: org.docx4j:docx4j-export-fo
+    versions:
+    - 11.2.8
+  - dependency-name: org.jetbrains.kotlin:kotlin-maven-plugin
+    versions:
+    - 1.4.21-2
+  - dependency-name: org.jetbrains.kotlin:kotlin-maven-allopen
+    versions:
+    - 1.4.21-2
+  - dependency-name: org.jetbrains.kotlin:kotlin-test
+    versions:
+    - 1.4.21-2
+  - dependency-name: org.jetbrains.kotlin:kotlin-reflect
+    versions:
+    - 1.4.21-2
+  - dependency-name: org.jetbrains.kotlin:kotlin-stdlib-jdk8
+    versions:
+    - 1.4.21-2
+  - dependency-name: joda-time:joda-time
+    versions:
+    - 2.10.9
+  - dependency-name: com.ibm.icu:icu4j
+    versions:
+    - "68.2"
+  - dependency-name: org.assertj:assertj-core
+    versions:
+    - 3.18.1
+  rebase-strategy: disabled
+  registries:
+  - maven-repository-maven-zkoss-org-repo-zk-ee
