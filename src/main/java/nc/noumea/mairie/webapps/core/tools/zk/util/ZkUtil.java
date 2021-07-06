@@ -79,6 +79,9 @@ public class ZkUtil {
 			if (isComponentToBeDisabled(component)) {
 				Method m = component.getClass().getMethod("setDisabled", Boolean.TYPE);
 				m.invoke(component, true);
+
+				m = component.getClass().getMethod("setPlaceholder", String.class);
+				m.invoke(component, (Object) null);
 			}
 			if (isComponentToHide(component)) {
 				Method m = component.getClass().getMethod("setVisible", Boolean.TYPE);
